@@ -268,7 +268,7 @@ proc drawIlot {fid startX startY  {style none}} {
 }
 
 
-set fid [open [file join [file dirname [info script]] test.svg] w+]
+set fid [open [file join [file dirname [info script]] boardmap.svg] w+]
 
 puts $fid {<?xml version="1.0" standalone="no"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" 
