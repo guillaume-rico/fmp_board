@@ -3,7 +3,7 @@
 set side 30
 
 set imageNameForGround   "sand.JPG"
-set imageNameForMountain "charbon_2.png"
+set imageNameForMountain "charbon.png"
 
 # Les symboles disponibles sont :
 #   e : eau
@@ -12,51 +12,109 @@ set imageNameForMountain "charbon_2.png"
 #   a : marécage
 #   m : montagne
 set surface ""
-lappend surface [list s s s s m s s s s s s a s a e m m m e e s s s s s a s s a s s s s s s s s ]
+lappend surface [list s m s a s m s s s s s m s s s a s a s s m s a ]
 
-lappend surface [list s s s s s s s s s s s a a a a a m s s a s s s s s s a a a a a s s s s s s ]
+lappend surface [list s s s s s s s i m s s s s s s s s m s s m m s ]
 
-lappend surface [list s s s s s a a a s s s e s s s s a a a m a s s s s s s a a s a a s s s s s ]
+lappend surface [list m s s s s e i s a s a m s s s a s s e s s s s ]
 
-lappend surface [list s s s s m m m m a e e s e s s s s s m m a s s s a e e e a s s s e m s m s ]
+lappend surface [list a s s s s a e m e s s m m e a a a s s s s s s ]
 
-lappend surface [list m s s m m s a e s e e e e e s s s e e e e e e e e e e e s e m e e m m s m ]
+lappend surface [list s s s s s s e s a e e e s e e a e s s a s s s ]
 
-lappend surface [list s s s s s s e e e i e e e e e s i e e e e e e e e e e e m i e e e s s s s ]
+lappend surface [list s s m s i m i e m e e s e a e e s e s e s m s ]
 
-lappend surface [list s s s s s s e e e i s s s i i i i e e e e e e e e e e e i i e m a s s s s ]
+lappend surface [list e s s a a s s e e e s e e s i s e e s m s a a ]
 
-lappend surface [list s s s s s s a s s i i s s a i e e i e i e i e e e e e e e s m m a s s s s ]
+lappend surface [list s s a m a s s e e i e a e s e s s s s a e a s ]
 
-lappend surface [list s s a s s s a s e e i s a m m e e s i s s i i e e e e e e s s s a a s s s ]
+lappend surface [list s a s e e s s e e a i i e i i s s s e a s s s ]
 
-lappend surface [list s s s s s s a e e e e e a a s e s s s m m s e e e i e e e e s s s a s s s ]
+lappend surface [list a s s s s s m e s s s e e e e s a e s s s s e ]
 
-lappend surface [list s s s s s a e e e e e e s e e e s s s m s s a s s e e i i e e s s s a a s ]
+lappend surface [list s e s s s s i m s e e a s s e e s e e m s s s ]
 
-lappend surface [list a a s s s e s e e e e s s e e e e e s m s a a s s m e e i e e s s s m a a ]
+lappend surface [list s s s m s e s i e s s s e e e a e e s a a s s ]
 
-lappend surface [list a a m m e e s i e e e e s s e e e e m s a s a a m s e e e e e s s e a s a ]
+lappend surface [list s m e m s s e e e s s a e e e s a s e s a s s ]
 
-lappend surface [list m m a a e s s s i i i e e e e m e a s s a s s e m i i s e e s e e s s s s ]
+lappend surface [list a s e e i s e e e i s a a a e e s s s e s s s ]
 
-lappend surface [list m s s a s s s s i s s m e e e m i a s s a s e e i a i e e e s e s s s s s ]
+lappend surface [list s s e e e i e e s e i s i s e e i e i s s s s ]
 
-lappend surface [list s s s a s s s e s i e e e m e e i e e e e e e e i a m e a i m e s s s s s ]
+lappend surface [list s s s s e s s e e e e i s s e e e e m e s s s ]
 
-lappend surface [list s s s m e m e e i i e e e s i i e e e e e e e e e e e e s s e m s s s s s ]
+lappend surface [list a i s s e s a s s s e e e e e s e e e s s s s ]
 
-lappend surface [list s s s m e m m e i e e e a a e e s s s e e e e e e e e e s e e s m m s s s ]
+lappend surface [list m a m s s e s s s s s s m e e e e i s e s s m ]
 
-lappend surface [list s s m m e e e i i s e a a a e s s s s s s s s e e e s s e a s s s s m s s ]
+lappend surface [list s s a s s e s e e s m m m s s e e a e e s s s ]
 
-lappend surface [list s s m a a a e s s s s a a a a s s s s s s s s s e a s s s m a s s s s s s ]
+lappend surface [list a a s a s m i e e s m e s s s s s s s e e s s ]
 
-lappend surface [list s s m a a a a s s s s s a s s s s s s s s s s s s s a a m e a s s s s s s ]
+lappend surface [list a s s m a s e s a m e s s s s a a s s s e e s ]
 
-lappend surface [list s s s s s s s s s s s a a e s s s m m m s s s s s s s a e s s s s s s s s ]
+lappend surface [list m e a s s s a s a a s i s a s s s s a e e s m ]
 
-lappend surface [list s s s s s s s s s s s a s s e m m m m m s m s s s a a s a s s s s s s s s ]
+lappend surface [list s s s m s s s a m a m s s s s s a s s s a s s ]
+
+
+source [file join [file dirname [info script]] random_board.tcl]
+
+set preview 0
+if {[lsearch -nocase $argv "-preview"] != -1} {
+    puts "Mode Preview"
+    set preview 1
+}
+    
+# Si on demande une génération aléatoire
+if {[lsearch -nocase $argv "-rand"] != -1} {
+
+    puts "Mode aléatoire"
+
+    # Random board needed
+
+    set nbColonne 37
+    if {[set argvindex [lsearch -nocase $argv "-nbcol"]] != -1} {
+        set nbColonne [lindex $argv [expr $argvindex + 1] ]
+    }
+    
+    set nbLigne 37
+    if {[set argvindex [lsearch -nocase $argv "-nbrow"]] != -1} {
+        set nbLigne [lindex $argv [expr $argvindex + 1] ]
+    }
+    
+
+    
+    #set surface [generateRandomBoard $nbColonne $nbLigne]
+    #set surface [intToSurface [morpho [morpho [surfaceToInt [generateRandomBoard $nbColonne $nbLigne]] erosion] dilatation]]
+    
+    set originalMap [generateRandomBoard $nbColonne $nbLigne]
+    
+    puts "For copy in excel"
+    foreach erosionLine $originalMap {
+        puts "[join $erosionLine "\t"]"
+    }
+    
+    #set intMap      [surfaceToInt $originalMap]
+    #set tempMap     $intMap
+    #set tempMap  [morpho $tempMap erosion]
+    #set tempMap  [morpho $tempMap dilatation]
+
+
+    #foreach origineLine $intMap erosionLine $tempMap {
+    #    foreach hexOrigine $origineLine hexErosion $erosionLine {
+    #        puts -nonewline "[expr $hexOrigine - $hexErosion] "
+    #    }
+    #    puts ""
+    #}
+
+    
+    set surface [intToSurface $originalMap]
+
+}
+
+
 
 
 # Taille standard : 37 colonne4, 23 lignes
@@ -399,19 +457,36 @@ puts $fid {    </mask>}
 puts $fid {</defs>}
 
 # On ajoute les images  pattern_eau_2 pattern_sand_stone
-puts $fid "<image xlink:href=\"$imageNameForGround\" x=\"0\" y=\"0\" height=\"$outputHeigth\" width=\"$outputWidth\" preserveAspectRatio=\"none\"  />"
+if {$preview == 0} {
+    puts $fid "<image xlink:href=\"$imageNameForGround\" x=\"0\" y=\"0\" height=\"$outputHeigth\" width=\"$outputWidth\" preserveAspectRatio=\"none\"  />"
+} else {
+    puts $fid "<rect x=\"0\" y=\"0\" width=\"$outputWidth\" height=\"$outputHeigth\" style=\"fill:#CC9959\"  />"
+}
+
 puts $fid "<rect x=\"0\" y=\"0\" width=\"$outputWidth\" height=\"$outputHeigth\" style=\"fill:#5f788c\" clip-path=\"url(#clip_water)\" />"
-puts $fid "<image xlink:href=\"$imageNameForGround\" x=\"0\" y=\"0\" height=\"$outputHeigth\" width=\"$outputWidth\" preserveAspectRatio=\"none\" mask=\"url(#mask_sand)\"  />"
+if {$preview == 0} {
+    puts $fid "<image xlink:href=\"$imageNameForGround\" x=\"0\" y=\"0\" height=\"$outputHeigth\" width=\"$outputWidth\" preserveAspectRatio=\"none\" mask=\"url(#mask_sand)\"  />"
+} else {
+    puts $fid "<rect x=\"0\" y=\"0\" width=\"$outputWidth\" height=\"$outputHeigth\" style=\"fill:#CC9959\" mask=\"url(#mask_sand)\"  />"
+}
 puts $fid "<rect x=\"0\" y=\"0\" width=\"$outputWidth\" height=\"$outputHeigth\" style=\"fill:#5f788c\" mask=\"url(#mask_marecage)\" />"
-puts $fid "<rect x=\"0\" y=\"0\" width=\"$outputWidth\" height=\"$outputHeigth\" mask=\"url(#mask_charbon_ombre)\"  style=\"fill:#000000\" />"
-puts $fid "<image xlink:href=\"${imageNameForMountain}\" x=\"0\" y=\"0\" height=\"$outputHeigth\" width=\"$outputWidth\" preserveAspectRatio=\"none\" mask=\"url(#mask_charbon)\" />"
+
+if {$preview == 0} {
+    puts $fid "<rect x=\"0\" y=\"0\" width=\"$outputWidth\" height=\"$outputHeigth\" mask=\"url(#mask_charbon_ombre)\"  style=\"fill:#000000\" />"
+    puts $fid "<image xlink:href=\"${imageNameForMountain}\" x=\"0\" y=\"0\" height=\"$outputHeigth\" width=\"$outputWidth\" preserveAspectRatio=\"none\" mask=\"url(#mask_charbon)\" />"
+} else {
+    puts $fid "<rect x=\"0\" y=\"0\" width=\"$outputWidth\" height=\"$outputHeigth\" style=\"fill:#655e5d\" mask=\"url(#mask_charbon)\"  />"
+}
+
 
 
 
 # On dessine les hexagones
 for {set i 0} {$i < $nbColonne} {incr i} {
     for {set j 0} {$j < [expr $nbLigne]} {incr j} {
-        drawHex $fid [expr $shiftX * $i] [expr $h * $j + ($i % 2) * $r] stroke 
+        if {[lindex $surface $j $i] != "" && [lindex $surface $j $i] != "u"} {
+            drawHex $fid [expr $shiftX * $i] [expr $h * $j + ($i % 2) * $r] stroke 
+        }
     }
 }
      
@@ -421,4 +496,9 @@ puts $fid "<rect x=\"0\" y=\"0\" width=\"$outputWidth\" height=\"$outputHeigth\"
 puts $fid {</svg>}
 
 close $fid
+
+# On affiche les stats
+source [file join [file dirname [info script]] stat.tcl]
+#stats $surface
+
 
