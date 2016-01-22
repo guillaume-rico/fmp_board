@@ -1,6 +1,6 @@
 
 # Define hexagone side in mm
-set side 30
+set side 20
 
 set imageNameForGround   "sand.JPG"
 set imageNameForMountain "charbon.png"
@@ -12,51 +12,52 @@ set imageNameForMountain "charbon.png"
 #   a : marécage
 #   m : montagne
 set surface ""
-lappend surface [list s m s a s m s s s s s m s s s a s a s s m s a ]
+lappend surface [list s s s s m s s s s s s a s a e m m m e e s s s s s a s s a s s s s s s s s ]
 
-lappend surface [list s s s s s s s i m s s s s s s s s m s s m m s ]
+lappend surface [list s s s s s s s s s s s a a a a a m s s a s s s s s s a a a a a s s s s s s ]
 
-lappend surface [list m s s s s e i s a s a m s s s a s s e s s s s ]
+lappend surface [list s s s s s a a a s s s e s s s s a a a m a s s s s s s a a s a a s s s s s ]
 
-lappend surface [list a s s s s a e m e s s m m e a a a s s s s s s ]
+lappend surface [list s s s s m m m m a e e s e s s s s s m m a s s s a e e e a s s s e m s m s ]
 
-lappend surface [list s s s s s s e s a e e e s e e a e s s a s s s ]
+lappend surface [list m s s m m s a e s e e e e e s s s e e e e e e e e e e e s e m e e m m s m ]
 
-lappend surface [list s s m s i m i e m e e s e a e e s e s e s m s ]
+lappend surface [list s s s s s s e e e i e e e e e s i e e e e e e e e e e e m i e e e s s s s ]
 
-lappend surface [list e s s a a s s e e e s e e s i s e e s m s a a ]
+lappend surface [list s s s s s s e e e i s s s i i i i e e e e e e e e e e e i i e m a s s s s ]
 
-lappend surface [list s s a m a s s e e i e a e s e s s s s a e a s ]
+lappend surface [list s s s s s s a s s i i s s a i e e i e i e i e e e e e e e s m m a s s s s ]
 
-lappend surface [list s a s e e s s e e a i i e i i s s s e a s s s ]
+lappend surface [list s s a s s s a s e e i s a m m e e s i s s i i e e e e e e s s s a a s s s ]
 
-lappend surface [list a s s s s s m e s s s e e e e s a e s s s s e ]
+lappend surface [list s s s s s s a e e e e e a a s e s s s m m s e e e i e e e e s s s a s s s ]
 
-lappend surface [list s e s s s s i m s e e a s s e e s e e m s s s ]
+lappend surface [list s s s s s a e e e e e e s e e e s s s m s s a s s e e i i e e s s s a a s ]
 
-lappend surface [list s s s m s e s i e s s s e e e a e e s a a s s ]
+lappend surface [list a a s s s e s e e e e s s e e e e e s m s a a s s m e e i e e s s s m a a ]
 
-lappend surface [list s m e m s s e e e s s a e e e s a s e s a s s ]
+lappend surface [list a a m m e e s i e e e e s s e e e e m s a s a a m s e e e e e s s e a s a ]
 
-lappend surface [list a s e e i s e e e i s a a a e e s s s e s s s ]
+lappend surface [list m m a a e s s s i i i e e e e m e a s s a s s e m i i s e e s e e s s s s ]
 
-lappend surface [list s s e e e i e e s e i s i s e e i e i s s s s ]
+lappend surface [list m s s a s s s s i s s m e e e m i a s s a s e e i a i e e e s e s s s s s ]
 
-lappend surface [list s s s s e s s e e e e i s s e e e e m e s s s ]
+lappend surface [list s s s a s s s e s i e e e m e e i e e e e e e e i a m e a i m e s s s s s ]
 
-lappend surface [list a i s s e s a s s s e e e e e s e e e s s s s ]
+lappend surface [list s s s m e m e e i i e e m s i i e e e e e e e e e e e e s s e m s s s s s ]
 
-lappend surface [list m a m s s e s s s s s s m e e e e i s e s s m ]
+lappend surface [list s s s m e m m e i e e e a a e e s s s e e e e e e e e e s e e s m m s s s ]
 
-lappend surface [list s s a s s e s e e s m m m s s e e a e e s s s ]
+lappend surface [list s s m m e e e i i s e a a a e s s s s s s s s e e e s s e a s s s s m s s ]
 
-lappend surface [list a a s a s m i e e s m e s s s s s s s e e s s ]
+lappend surface [list s s m a a a e s s s s a a a a s s s s s s s s s e a s s s m a s s s s s s ]
 
-lappend surface [list a s s m a s e s a m e s s s s a a s s s e e s ]
+lappend surface [list s s m a a a a s s s s s a s s s s s s s s s s s s s a a m e a s s s s s s ]
 
-lappend surface [list m e a s s s a s a a s i s a s s s s a e e s m ]
+lappend surface [list s s s s s s s s s s s a a e s s s m m m s s s s s s s a e s s s s s s s s ]
 
-lappend surface [list s s s m s s s a m a m s s s s s a s s s a s s ]
+lappend surface [list s s s s s s s s s s s a s s e m m m m m s m s s s a a s a s s s s s s s s ]
+
 
 
 source [file join [file dirname [info script]] random_board.tcl]
@@ -164,7 +165,7 @@ proc drawHex {fid startX startY {style none} {expand 1} {shiftX 0} {shiftY 0}} {
 		puts $fid "        <polygon points=\"$x1,$y1 $x2,$y2 $x3,$y3 $x4,$y4 $x5,$y5 $x6,$y6\" style=\"stroke:none; fill: #ffffff;filter:url(#filterMontagne)\" />"
 	}
 	if {$style == "stroke"} {
-		puts $fid "        <polygon points=\"$x1,$y1 $x2,$y2 $x3,$y3 $x4,$y4 $x5,$y5 $x6,$y6\" style=\"stroke:rgb(0,0,0);stroke-width:1;fill: none\" />"
+		puts $fid "        <polygon points=\"$x1,$y1 $x2,$y2 $x3,$y3 $x4,$y4 $x5,$y5 $x6,$y6\" style=\"stroke:rgb(0,0,0);stroke-width:0.25;fill: none\" />"
 	}
 
     set x1 [expr $x1 + $shiftX]
@@ -353,7 +354,7 @@ puts $fid {
          seed="1"
          stdDeviation="5.5" />
       <feDisplacementMap
-         scale="41"
+         scale="28"
          result="result5"
          xChannelSelector="R"
          in="SourceGraphic"
@@ -389,8 +390,8 @@ puts $fid {
          result="blur"
          id="feGaussianBlur10554" />
       <feOffset
-         dx="-7.6"
-         dy="7"
+         dx="-4.6"
+         dy="2.6"
          result="offset"
          id="feOffset10556" />
       <feComposite
@@ -498,7 +499,7 @@ puts $fid {</svg>}
 close $fid
 
 # On affiche les stats
-source [file join [file dirname [info script]] stat.tcl]
+#source [file join [file dirname [info script]] stat.tcl]
 #stats $surface
 
 

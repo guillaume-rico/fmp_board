@@ -9,22 +9,52 @@
 proc generateRandomBoard {nbC nbL} {
 
     set elemType [list s m i a e]
-    set stat(s) [list 67.35	6.24	2.86	10.74	12.8]
+    set stat(s) [list 73.59 0	2.86	10.74	12.8]
     set stat(m) [list 31.32	27.59	3.74	15.8	21.55]
-    set stat(i) [list 20	4.81	31.85	4.07	39.26]
-    set stat(a) [list 38.7	10.74	2.04	36.67	11.85]
-    set stat(e) [list 17.55	5.51	7.78	4.63	64.54]
+    set stat(i) [list 24.81 0	31.85	4.07	39.26]
+    set stat(a) [list 49.44 0	2.04	36.67	11.85]
+    set stat(e) [list 17.55	0	7.78	4.63	70.05]
 
+    # set stat(s) [list 67.35	6.24	2.86	10.74	12.8]
+    # set stat(m) [list 31.32	27.59	3.74	15.8	21.55]
+    # set stat(i) [list 20	4.81	31.85	4.07	39.26]
+    # set stat(a) [list 38.7	10.74	2.04	36.67	11.85]
+    # set stat(e) [list 17.55	5.51	7.78	4.63	64.54]
+    
     # Terre
-    set statAll(0) [list 75 10	0 10 5]
+    set nbZone 0
+    set statAll($nbZone)        [list 80 0 0 15 5]
+    set statAll([incr nbZone])  [list 80 0 0 15 5]
     # Intermediare
-    set statAll(1) [list 45 5   10 10 40]
+    set statAll([incr nbZone]) [list 45 0 10 10 45]
     # eau
-    set statAll(2) [list 0	0 0 10 90]
+    set statAll([incr nbZone]) [list 0	0 5 5 90]
+    set statAll([incr nbZone]) [list 0	0 5 5 90]
     # Intermediare
-    set statAll(3) $statAll(1)
+    set statAll([incr nbZone]) [list 45 0 10 10 45]
     # Ile
-    set statAll(4) [list 65 15 10 10 5]
+    set statAll([incr nbZone]) [list 75 0 10 15 5]
+    set statAll([incr nbZone]) [list 75 0 10 15 5]
+    # Eau
+    set statAll([incr nbZone]) [list 0	0 0 5 95]
+    
+    
+    ## Terre
+    # set nbZone 0
+    # set statAll($nbZone)        [list 75 5 0 15 5]
+    # set statAll([incr nbZone])  [list 75 5 0 15 5]
+    ##Intermediare
+    # set statAll([incr nbZone]) [list 40 5 10 10 45]
+    ##eau
+    # set statAll([incr nbZone]) [list 0	0 5 5 90]
+    # set statAll([incr nbZone]) [list 0	0 5 5 90]
+    ##Intermediare
+    # set statAll([incr nbZone]) [list 40 5 10 10 45]
+    ##Ile
+    # set statAll([incr nbZone]) [list 70 10 10 10 5]
+    # set statAll([incr nbZone]) [list 70 10 10 10 5]
+    ##Eau
+    # set statAll([incr nbZone]) [list 0	0 0 5 95]
     
     set stat(0) [list 74.14	12.07	0.00	10.34	3.45]
     set stat(1) [list 75.93	5.56	0.00	16.67	1.85]
@@ -130,7 +160,7 @@ proc generateRandomBoard {nbC nbL} {
                 set distanceBas     [expr $nbC - 1 - $i]
                 set distance        [expr min($distanceHaut,$distanceGauche,$distanceDroite,$distanceBas)]
                 # La distance pour les stat de all doit être entre 0 et 4
-                set distanceAll     [expr round(4.0 * $distance / $dimensionMin)]
+                set distanceAll     [expr round($nbZone * 1.0 * $distance / $dimensionMin)]
  
                 set coef 2.0
  
@@ -165,6 +195,86 @@ proc generateRandomBoard {nbC nbL} {
             }
             set surface $newList
         }
+    }
+    
+    # On génére les montagne
+    # Le principe :
+    # On pose des graines de montagnes , puis on les faits grossir
+    # Dans la carte de base , la taille des montagnes est la suivante :
+    # Taille 1 : 9 : 36%
+    # Taille 2 : 4 : 16% (52%)
+    # Taille 3 : 5 : 20% (72%)
+    # Taille 4 : 2 : 8%  (80%)
+    # Taille 5 : 2 : 8%  (88%)
+    # Taille 6 : 2 : 8%  (96%)
+    # Taille 8 : 1 : 4%
+
+    for {set i 0} {$i < $nbC} {incr i} {
+        for {set j 0} {$j < $nbL} {incr j} {
+        
+            set rand [expr round(rand() * 10000)/100.0]
+            
+            # Dans la carte de base, il y a 25 graines pour 851 hexagones, soit 2.93% de probabilité par case
+            if {$rand < 2.4} {
+            
+                # On est dans le cas ou on doit mettre une graine
+                lappend listeMontagne [list $i $j]
+                puts [list $i $j]
+                # La taille d'expansion doit être entre 0 et 5 hexagones supplémentaires (Taille totale : 1 --> 6)
+                set aleaExt [expr round(rand() * 10000)/100.0]
+                if {$aleaExt <= 36.0} {
+                    set extansion 0
+                } elseif {$aleaExt <= 52.0} {
+                    set extansion 1
+                } elseif {$aleaExt <= 72.0} {
+                    set extansion 2
+                } elseif {$aleaExt <= 80.0} {
+                    set extansion 3
+                } elseif {$aleaExt <= 88.0} {
+                    set extansion 4
+                } elseif {$aleaExt <= 92.0} {
+                    set extansion 5
+                } elseif {$aleaExt <= 96.0} {
+                    set extansion 6
+                } else {
+                    set extansion 7
+                }
+                
+                
+                set actualX $i
+                set actualY $j
+                
+                for {set ext 0} {$ext < $extansion} {incr ext} {
+                
+                    # On se déplace a partir de l'emplacement actuel
+                    set Xoffset [expr round(rand() * 3 - 1.5)]
+                    set Yoffset [expr round(rand() * 3 - 1.5)]
+                    
+                    if {[expr $actualX + $Xoffset] < 0 || [expr $actualX + $Xoffset] > [expr $nbL - 1]} {
+                        set Xoffset 0
+                    }
+                    if {[expr $actualY + $Yoffset] < 0 || [expr $actualY + $Yoffset] > [expr $nbC - 1]} {
+                        set Yoffset 0
+                    }
+                    
+                    set actualX [expr $actualX + $Xoffset]
+                    set actualY [expr $actualY + $Yoffset]
+                    lappend listeMontagne [list $actualX $actualY]
+                    puts [list $actualX $actualY]
+                    
+                }
+            }
+        }
+    }
+    
+    foreach montagne $listeMontagne {
+        set colonne [lindex $montagne 0]
+        set ligne [lindex $montagne 1]
+        
+        set newLine [lreplace [lindex $surface $ligne] $colonne $colonne "m"]
+        
+        set surface [lreplace $surface $ligne $ligne $newLine]
+        
     }
     
     return $surface

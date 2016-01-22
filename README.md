@@ -4,9 +4,41 @@
 
 Ce projet est un script qui permet de générer une carte pour le jeu full métal planet à partir d'un tableau Excel.
 
-Il y a aussi un petit script qui permet de calculer quelques stats : stat.tcl .
+Exemple :
+
+Carte 23 x 23 :
+
+![Image exemple](https://github.com/guillaume-rico/fmp_board/example/23_23_1_miniature.png)
+
+Carte d'origine :
+
+![Image exemple](https://github.com/guillaume-rico/fmp_board/example/map_origine_miniature.png)
 
 ## Procédure :
+
+### Pré requis
+
+1. Installer tcl/tk  (Distribution disponible là : http://www.activestate.com/activetcl/downloads )
+
+2. Installer Inkscape
+
+3. Télécharger le projet dans un dossier
+
+### Génération aléatoire
+
+1. Exécuter le script : tclsh generation.tcl -rand -nbrow 23 -nbcol 37
+(se mettre dans le bon dossier avant de lancer la commande ...)
+
+2. Un fichier boardmap.svg est créé dans le dossier d'installation. Ce fichier est lisible avec tout un tas de logiciel dont Google Chrome, Inkscape ...
+
+3. Ouvrir avec Inkscape le fichier .svg
+
+4. Fichier --> Exporter une image PNG . Cliquer ensuite sur "Exporter"
+
+5.Pour une impression : ouvrir l'image avec paint , dans "Mise en page",  sélectionner l'option "100% de la taille normale", puis imprimer les différentes pages
+
+
+### Génération a partir d'excel
 
 1. Ouvrir le fichier excel board.xls
 
@@ -21,11 +53,16 @@ Il y a aussi un petit script qui permet de calculer quelques stats : stat.tcl .
 
 3. Copier coller la colonne "A" de votre feuille excel dans le script generation.tcl (remplacer les lignes contenant les anciennes valeures)
 
-4. Installer tcl/tk si ce n'est pas déjà fait (Distribution disponible là : http://www.activestate.com/activetcl/downloads )
-
-5. Exécuter le script : tclsh generation.tcl  (se mettre dans le bon dossier avant de lancer la commande ...)
+4. Exécuter le script : tclsh generation.tcl  (se mettre dans le bon dossier avant de lancer la commande ...)
 
 6. Un fichier boardmap.svg est créé dans le dossier d'installation. Ce fichier est lisible avec tout un tas de logiciel dont Google Chrome, Inkscape ...
+
+7. Ouvrir avec Inkscape le fichier .svg
+
+8. Fichier --> Exporter une image PNG . Cliquer ensuite sur "Exporter"
+
+9. Pour une impression : ouvrir l'image avec paint , dans "Mise en page",  sélectionner l'option "100% de la taille normale", puis imprimer les différentes pages
+
 
 ## Quelques statistiques
 
