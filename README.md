@@ -8,11 +8,11 @@ Exemple :
 
 Carte 23 x 23 :
 
-![Image exemple](https://github.com/guillaume-rico/fmp_board/example/23_23_1_miniature.png)
+![Image exemple](https://github.com/guillaume-rico/fmp_board/blob/master/example/23_23_1_miniature.png)
 
 Carte d'origine :
 
-![Image exemple](https://github.com/guillaume-rico/fmp_board/example/map_origine_miniature.png)
+![Image exemple](https://github.com/guillaume-rico/fmp_board/blob/master/example/map_origine_miniature.png)
 
 ## Procédure :
 
