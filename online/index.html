@@ -69,7 +69,6 @@
             // A faire :
             // * Export SVG
             // * Sauvegarde carte 
-            // * Sélection taille 
             // * Sélection coef
             // * Rechargement en live
             // * Motif : i et a 
@@ -121,50 +120,52 @@
                 left: 50
             };
 
-            //The next lines should be run, but this seems to go wrong on the first load in bl.ocks.org
-            var width = $(window).width() - margin.left - margin.right - 40;
-            var height = $(window).height() - margin.top - margin.bottom - 80;
-            //So I set it fixed to
-            //var width = 900;
-            //var height = 900;
-
-            // On vient charger le nb de col et de ligne
-    
-            var nbRow = 23;
-            var nbCol = 37;
-            
-            //The number of columns and rows of the heatmap
-            var MapColumns = nbCol,
-                MapRows = nbRow;
-                
-            //The maximum radius the hexagons can have to still fit the screen
-            var hexRadius = d3.min([width/((MapColumns + 0.5) * Math.sqrt(3)),
-                        height/((MapRows + 1/3) * 1.5)]);
-
-            //Set the new height and width of the SVG based on the max possible
-            width = MapColumns*hexRadius*Math.sqrt(3);
-            height = MapRows*1.5*hexRadius+0.5*hexRadius;
-
-            //Set the hexagon radius
-            var hexbin = d3.hexbin()
-                           .radius(hexRadius);
-
-            //Calculate the center positions of each hexagon	
-            var points = [];
-            for (var i = 0; i < MapColumns; i++) {
-                for (var j = 0; j < MapRows; j++) {
-                    points.push([hexRadius * i * 1.75, hexRadius * j * 1.5]);
-                }//for j
-            }//for i
 
 
             function computeboard() {
     
+
+                //The next lines should be run, but this seems to go wrong on the first load in bl.ocks.org
+                var width = $(window).width() - margin.left - margin.right - 40;
+                var height = $(window).height() - margin.top - margin.bottom - 80;
+                //So I set it fixed to
+                //var width = 900;
+                //var height = 900;
+
+                // On vient charger le nb de col et de ligne
+        
+                var nbRow = parseInt(document.getElementById("hauteur").value);
+                var nbCol = parseInt(document.getElementById("largeur").value);
+                
+
+                //The number of columns and rows of the heatmap
+                var MapColumns = nbCol,
+                    MapRows = nbRow;
+                    
+                //The maximum radius the hexagons can have to still fit the screen
+                var hexRadius = d3.min([width/((MapColumns + 0.5) * Math.sqrt(3)),
+                            height/((MapRows + 1/3) * 1.5)]);
+
+                //Set the new height and width of the SVG based on the max possible
+                width = MapColumns*hexRadius*Math.sqrt(3);
+                height = MapRows*1.5*hexRadius+0.5*hexRadius;
+
+                //Set the hexagon radius
+                var hexbin = d3.hexbin()
+                               .radius(hexRadius);
+
+                //Calculate the center positions of each hexagon	
+                var points = [];
+                for (var i = 0; i < MapColumns; i++) {
+                    for (var j = 0; j < MapRows; j++) {
+                        points.push([hexRadius * i * 1.75, hexRadius * j * 1.5]);
+                    }//for j
+                }//for i
+    
+    
                 // On supprime tout ce qui traine
                 d3.select('svg').remove();
-    
-                nbRow = document.getElementById("hauteur").value;
-                nbCol = document.getElementById("largeur").value;
+
             
                 //var display = document.getElementById('display');
                 //var ctx = display.getContext('2d');
@@ -223,7 +224,7 @@
                     ;
             }
             
-            computeboard(nbCol,nbRow);
+            computeboard();
             
         </script>
 
