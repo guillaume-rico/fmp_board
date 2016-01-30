@@ -2,6 +2,10 @@
 
 ## Intoduction
 
+Une nouvelle version est disponible ! Basée uniquement sur du Javascript, elle permet de générer des cartes à partir d'un navigateur web.
+
+
+
 Ce projet est un script qui permet de générer une carte pour le jeu full métal planet à partir d'un tableau Excel.
 
 Exemple :
