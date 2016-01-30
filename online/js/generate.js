@@ -56,6 +56,21 @@
             return "m";
           }
         }
+        function valtoshortint(intval) {
+          if (intval == "u") {
+            return 0;
+          } else if (intval == "e") {
+            return 1;
+          } else if (intval == "i") {
+            return 2;
+          } else if (intval == "a") {
+            return 3;
+          } else if (intval == "s") {
+            return 4;
+          } else {
+            return 5;
+          }
+        }
         // Conversion float--> couleur
         function definecolor(slope) {
 
@@ -146,12 +161,12 @@
             
             actualX = x;
             actualY = y;
-            
+            var listOfEmplacement = [];
             for (var ext = 0 ; ext < extansion ; ext++) {
             
                 // On se déplace a partir de l'emplacement actuel
-                Xoffset = Math.round(Math.random() * 2 - 1);
-                Yoffset = Math.round(Math.random() * 2 - 1);
+                Xoffset = Math.round(Math.random() * 2.99 - 1.5);
+                Yoffset = Math.round(Math.random() * 2.99 - 1.5);
                 
                 if ((actualX + Xoffset) < 0 || (actualX + Xoffset) > (this.nbRow - 1)) {
                     Yoffset = 0
@@ -159,14 +174,22 @@
                 if ((actualY + Yoffset) < 0 || (actualY + Yoffset) > (this.nbCol - 1)) {
                     Yoffset = 0;
                 }
-                
-                this.set(x , y , 100);
-                
+
                 actualX = (actualX + Xoffset);
                 actualY = (actualY + Yoffset);
                 
-                this.set(actualX , actualY , 100);
+                var finded =  listOfEmplacement.indexOf(actualX + "-" + actualY);
                 
+                if (finded == -1) {
+                    
+                    listOfEmplacement.push(actualX + "-" + actualY);
+                    
+                    this.set(actualX , actualY , 100);
+                    
+                } else {
+                    ext--;
+                }
+
             }
             
         }
@@ -203,30 +226,35 @@
     Terrain.prototype.stat = function(nbMountain) {
         
         var stat = []
-        stat["s"] = [73.59,0,2.86,10.74,12.8];
+        //stat["s"] = [73.59,0,2.86,10.74,12.8];
+        stat["s"] = [100,0,0,0,0];
         stat["m"] = [31.32,27.59,3.74,15.8,21.55];
-        stat["i"] = [24.81,0,31.85,4.07,39.26];
-        stat["a"] = [49.44,0,2.04,36.67,11.85];
-        stat["e"] = [17.55,0,7.78,4.63,70.05];
+       // stat["i"] = [24.81,0,31.85,4.07,39.26];
+        stat["i"] = [0,0,100,0,0];
+        //stat["a"] = [49.44,0,2.04,36.67,11.85];
+        stat["a"] = [0,0,0,100,0];
+        //stat["e"] = [17.55,0,7.78,4.63,70.05];
+        stat["e"] = [0,0,0,0,100];
         
         // Terre
         nbZone = 0;
         var statAll = []
-        statAll[0] = [80,0,0,15,5];
-        statAll[1] = [80,0,0,15,5];
+        statAll[nbZone++] = [80,0,0,15,5];
+        statAll[nbZone++] = [80,0,0,15,5];
+        statAll[nbZone++] = [80,0,0,15,5];
         // Intermediare
-        statAll[2] = [45,0,10,10,45];
+        statAll[nbZone++] = [45,0,10,10,45];
         // eau
-        statAll[3] = [0,0,5,5,90];
-        statAll[4] = [0,0,5,5,90];
+        statAll[nbZone++] = [0,0,5,5,90];
+        statAll[nbZone++] = [0,0,5,5,90];
         // Intermediare
-        statAll[5] = [45,0,10,10,45];
+        statAll[nbZone++] = [45,0,10,10,45];
         // Ile
-        statAll[6] = [75,0,10,15,5];
-        statAll[6] = [75,0,10,15,5];
+        statAll[nbZone++] = [75,0,10,15,5];
+        statAll[nbZone++] = [75,0,10,15,5];
         // Eau
-        statAll[7] = [0,0,0,5,95];
-        nbZone = 8;
+        statAll[nbZone++] = [0,0,0,5,95];
+        nbZone = nbZone - 1;
         
         if (this.nbCol < this.nbRow) {
             dimensionMin = this.nbCol / 2;
@@ -313,7 +341,7 @@
                             distanceAll = 3;
                         }
          
-                        coef = 2.0;
+                        coef = 1.0;
          
                         proba["s"] = ((proba["s"] + coef *  statAll[distanceAll][0]) / (coef + 1));
                         proba["m"] = ((proba["m"] + coef *  statAll[distanceAll][1]) / (coef + 1));
@@ -439,7 +467,6 @@
                 var top = flatproject(x, y);
                 var bottom = flatproject(x + 1, y + 1);
                 var style = definecolor(intoval(val));
-                color[count] = style;
                 groundstyle[count] = intoshortint(val);
                 positionXY[count] = x + "-" + y + "-" + count;
                 count = count + 1;
@@ -454,4 +481,6 @@
             y: flatY
           };
         }
+        
+        return groundstyle;
       };

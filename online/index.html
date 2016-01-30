@@ -9,6 +9,7 @@
 		<script type="text/javascript" src="src/jquery-2.2.0.min.js"></script>
 		<script type="text/javascript" src="js/generate.js"></script>
 		<script type="text/javascript" src="js/tosvg.js"></script>
+		<script type="text/javascript" src="js/exemple.js"></script>
 
 		<style type="text/css">
 			body {
@@ -53,7 +54,7 @@
 	</head>
 	<body>
 	    <div class="header">
-			Generation de carte pour Full Metal Planet
+			Génération de carte pour Full Metal Planet
 			<div class="hint">Cliquer sur une case pour changer la nature du sol</div>
 		</div>
         <div class="control">
@@ -61,9 +62,11 @@
                 largeur : <input id="largeur" type="text" size="10" value="37">
                 hauteur : <input id="hauteur" type="text" size="10" value="23">
                  <input id="valider" type="button" size="10" value="Recharger" onclick="computeboard();">
+                 <input id="initialise_origine" type="button" size="10" value="Carte originale" onclick="initboard('origin');">
             <div>
             <div class="download">
-                 <input id="valider" type="button" size="10" value="Telecharger" onclick="download();">
+                 <input id="valider" type="button" size="10" value="Telecharger" onclick="download();" style="float:left;" >
+                 <p>Penser à télécharger les fichiers suivants dans le même dossier <a href="https://github.com/guillaume-rico/fmp_board/raw/master/charbon.png" download="charbon.png">charbon.png</a> & <a href="https://github.com/guillaume-rico/fmp_board/raw/master/sand.JPG" download="sand.JPG">sand.JPG</a> </p>
             <div>
         <div>
 
@@ -76,11 +79,9 @@
 		<script type="text/javascript">
         
             // A faire :
-            // * Export SVG
             // * Sauvegarde carte 
-            // * S�lection coef
+            // * Sélection coef
             // * Motif : i et a 
-
             
            //Function to call when you mouseover a node
             function mover(d) {
@@ -109,7 +110,7 @@
                 // On cherche le style 
                 var style = groundstyle[parseInt(el.attr("indexI"))] + 1;
                 
-                // On incr�mente
+                // On incrémente
                 if (style > 5) {
                     style = 1 ;
                 }
@@ -136,22 +137,27 @@
             };
 
             var svg;
-            var nbRow = 23;
-            var nbCol = 23;
-            function computeboard() {
+            var nbRow;
+            var nbCol;
+            function computeboard(newnbRow = 0, newnbCol = 0, groundstyle = "") {
     
 
                 //The next lines should be run, but this seems to go wrong on the first load in bl.ocks.org
                 var width = $(window).width() - margin.left - margin.right - 40;
-                var height = $(window).height() - margin.top - margin.bottom - 80;
+                var height = $(window).height() - margin.top - margin.bottom - 120;
                 //So I set it fixed to
                 //var width = 900;
                 //var height = 900;
 
                 // On vient charger le nb de col et de ligne
-        
-                nbRow = parseInt(document.getElementById("hauteur").value);
-                nbCol = parseInt(document.getElementById("largeur").value);
+                if (newnbRow == 0 ) {            
+                    newnbRow = parseInt(document.getElementById("hauteur").value);
+                }
+                if (newnbCol == 0 ) {            
+                    newnbCol = parseInt(document.getElementById("largeur").value);
+                }
+                nbRow = newnbRow;
+                nbCol = newnbCol;
                 
 
                 //The number of columns and rows of the heatmap
@@ -189,15 +195,17 @@
                 //var ctx = display.getContext('2d');
                 //var width = display.width = window.innerWidth;
                 //var height = display.height = window.innerHeight;
-                // On calcul la taille de la grille a g�n�rer
-                var terrain = new Terrain(nbCol,nbRow);
-                // On r�alise le tour de la carte
-                terrain.tourdecarte();
-                //terrain.generate();
-                terrain.stat();
-                // On ajoute les montagne 0.0293
-                terrain.mountain(0.04);
-                terrain.draw();
+                // On calcul la taille de la grille a générer
+                if (groundstyle == "") {
+                    var terrain = new Terrain(nbCol,nbRow);
+                    // On réalise le tour de la carte
+                    terrain.tourdecarte();
+                    //terrain.generate();
+                    terrain.stat();
+                    // On ajoute les montagne 0.0293
+                    terrain.mountain(0.03);
+                    groundstyle = terrain.draw();
+                }
                 
               
 
@@ -288,7 +296,7 @@
                     })
                     .attr("stroke-width", "0.25px")
                     .style("fill", function (d,i) {
-                        return color[i];
+                        return definecolor(shortintoval(groundstyle[i]));
                     })
                     .attr("positionXY", function (d,i) {
                         return positionXY[i];
@@ -303,7 +311,7 @@
 
                 
             }
-            
+
             computeboard();
             
             
