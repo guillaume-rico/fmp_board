@@ -294,7 +294,7 @@ function tosvg () {
     retstr = retstr.concat('         <clipPath id="clip_water"> \n');
     for (var i = 0; i < nbCol; i++) {
         for (var j = 0 ; j < nbRow ; j++) {
-            localGrndStyle = shortintoval(groundstyle[ j + nbRow * i]);
+            localGrndStyle = shortintoval(groundstyle[ i + nbRow * j]);
             if (localGrndStyle == "e"  || localGrndStyle == "i") {
                 retstr = retstr.concat(drawHex(shiftX * i,h * j + (i % 2) * r) + "\n");
             }
@@ -307,7 +307,7 @@ function tosvg () {
  retstr = retstr.concat('         <mask id="mask_sand"> \n');
     for (var i = 0; i < nbCol; i++) {
         for (var j = 0 ; j < nbRow ; j++) {
-            localGrndStyle = shortintoval(groundstyle[ j + nbRow * i]);
+            localGrndStyle = shortintoval(groundstyle[ i + nbRow * j]);
             if (localGrndStyle == "s"  || localGrndStyle == "a") {
                 retstr = retstr.concat(drawHex(shiftX * i,h * j + (i % 2) * r,"bord") + "\n");
             }
@@ -321,7 +321,7 @@ function tosvg () {
     drawHexStr = "";
     for (var i = 0; i < nbCol; i++) {
         for (var j = 0 ; j < nbRow ; j++) {
-            localGrndStyle = shortintoval(groundstyle[ j + nbRow * i]);
+            localGrndStyle = shortintoval(groundstyle[ i + nbRow * j]);
             if (localGrndStyle == "m") {
                 retstr = retstr.concat(drawHex(shiftX * i,h * j + (i % 2) * r,"bord",1.2,-15,15) + "\n");
             }
@@ -334,7 +334,7 @@ function tosvg () {
  retstr = retstr.concat('         <mask id="mask_marecage"> \n');
     for (var i = 0; i < nbCol; i++) {
         for (var j = 0 ; j < nbRow ; j++) {
-            localGrndStyle = shortintoval(groundstyle[ j + nbRow * i]);
+            localGrndStyle = shortintoval(groundstyle[ i + nbRow * j]);
             if (localGrndStyle == "a") {
                 retstr = retstr.concat(drawIlot(shiftX * i,h * j + (i % 2) * r,"bord") + "\n");
             }
@@ -364,7 +364,7 @@ function tosvg () {
     // On dessine les hexagones
     for (var i = 0; i < nbCol; i++) {
         for (var j = 0 ; j < nbRow ; j++) {
-            localGrndStyle = shortintoval(groundstyle[ j + nbRow * i]);
+            localGrndStyle = shortintoval(groundstyle[ i + nbRow * j]);
             if (localGrndStyle != "" && localGrndStyle != "u") {
                 retstr = retstr.concat(drawHex((shiftX * i),(h * j + (i % 2) * r),"stroke") + "\n");
             }

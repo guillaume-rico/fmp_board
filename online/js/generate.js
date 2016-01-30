@@ -424,6 +424,7 @@
       
       var color = [];
       var groundstyle = [];
+      var positionXY = [];
       
       Terrain.prototype.draw = function() {
 
@@ -431,16 +432,18 @@
         var waterVal = this.size * 0.3;
         var count = 0
 
-        for (var x = 0; x < this.nbCol; x++) {
-          for (var y = 0; y < this.nbRow; y++) {
-            var val = this.get(x, y);
-            var top = flatproject(x, y);
-            var bottom = flatproject(x + 1, y + 1);
-            var style = definecolor(intoval(val));
-            color[count] = style;
-            groundstyle[count] = intoshortint(val);
-            count = count + 1;
-          }
+
+        for (var y = 0; y < this.nbRow; y++) {
+            for (var x = 0; x < this.nbCol; x++) {
+                var val = this.get(x, y);
+                var top = flatproject(x, y);
+                var bottom = flatproject(x + 1, y + 1);
+                var style = definecolor(intoval(val));
+                color[count] = style;
+                groundstyle[count] = intoshortint(val);
+                positionXY[count] = x + "-" + y + "-" + count;
+                count = count + 1;
+            }
         }
 
 
