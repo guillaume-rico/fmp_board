@@ -8,6 +8,7 @@
 		<script type="text/javascript" src="src/d3.hexbin.min.js"></script>	
 		<script type="text/javascript" src="src/jquery-2.2.0.min.js"></script>
 		<script type="text/javascript" src="js/generate.js"></script>
+		<script type="text/javascript" src="js/tosvg.js"></script>
 
 		<style type="text/css">
 			body {
@@ -61,16 +62,23 @@
                 hauteur : <input id="hauteur" type="text" size="10" value="37">
                  <input id="valider" type="button" size="10" value="Recharger" onclick="computeboard();">
             <div>
+            <div class="download">
+                 <input id="valider" type="button" size="10" value="Telecharger" onclick="download();">
+            <div>
         <div>
+
+        
 		<div id="chart"></div>
 		
+<!-- <svg height="10" width="10" xmlns="http://www.w3.org/2000/svg" version="1.1"> <defs> <pattern id="" patternUnits="" width="10" height="10"> <image xlink:href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHdpZHRoPScxMCcgaGVpZ2h0PScxMCc+CiAgPHJlY3Qgd2lkdGg9JzEwJyBoZWlnaHQ9JzEwJyBmaWxsPSd3aGl0ZScgLz4KICA8Y2lyY2xlIGN4PSczJyBjeT0nMycgcj0nMycgZmlsbD0nYmxhY2snLz4KPC9zdmc+Cg==" x="0" y="0" width="10" height="10"> </image> </pattern> </defs> </svg> -->
+
+                        
 		<script type="text/javascript">
         
             // A faire :
             // * Export SVG
             // * Sauvegarde carte 
             // * Sélection coef
-            // * Rechargement en live
             // * Motif : i et a 
 
             
@@ -94,6 +102,7 @@
             
             //Mouseclick function
             function mclick(d) { 
+
                 var el = d3.select(this);
                 //alert(el.data());
                 // On incrémente
@@ -120,8 +129,9 @@
                 left: 50
             };
 
-
-
+            var svg;
+            var nbRow = 23;
+            var nbCol = 23;
             function computeboard() {
     
 
@@ -134,8 +144,8 @@
 
                 // On vient charger le nb de col et de ligne
         
-                var nbRow = parseInt(document.getElementById("hauteur").value);
-                var nbCol = parseInt(document.getElementById("largeur").value);
+                nbRow = parseInt(document.getElementById("hauteur").value);
+                nbCol = parseInt(document.getElementById("largeur").value);
                 
 
                 //The number of columns and rows of the heatmap
@@ -178,7 +188,7 @@
                 //terrain.generate();
                 terrain.stat();
                 // On ajoute les montagne 0.0293
-                terrain.mountain(0.0293);
+                terrain.mountain(0.04);
                 terrain.draw();
                 
               
@@ -188,13 +198,70 @@
                 ///////////////////////////////////////////////////////////////////////////
 
                 //Create SVG element
-                var svg = d3.select("#chart").append("svg")
+                svg = d3.select("#chart").append("svg")
                     .attr("width", width + margin.left + margin.right)
                     .attr("height", height + margin.top + margin.bottom)
                     .append("g")
                     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
+                svg
+                  .append('defs')
+                      .append('pattern')
+                        .attr('id', 'diagonalHatch')
+                        .attr('patternUnits', 'userSpaceOnUse')
+                        .attr('width', 4)
+                        .attr('height', 4)
+                      .append('path')
+                        .attr('d', 'M-1,1 l2,-2 M0,4 l4,-4 M3,5 l2,-2')
+                        .attr('stroke', '#000000')
+                        .attr('stroke-width', 1);
+                svg
+                  .append('defs')
+                      .append('pattern')
+                        .attr('id', 'circles-5')
+                        .attr('patternUnits', 'userSpaceOnUse')
+                        .attr('width', 10)
+                        .attr('height', 10)
+                      .append('image')
+                        .attr('xlink:href', 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHdpZHRoPScxMCcgaGVpZ2h0PScxMCc+CiAgPHJlY3Qgd2lkdGg9JzEwJyBoZWlnaHQ9JzEwJyBmaWxsPSd3aGl0ZScgLz4KICA8Y2lyY2xlIGN4PSczJyBjeT0nMycgcj0nMycgZmlsbD0nYmxhY2snLz4KPC9zdmc+Cg==')
+                        .attr('x', 0)
+                        .attr('y', 0)
+                        .attr('width', 10)
+                        .attr('height', 10);
 
+                var fillMarecage = svg.append("pattern")
+                    .attr("id", "marecage")
+                    .attr("patternUnits", "userSpaceOnUse")
+                    .attr("width", 10)
+                    .style("fill", "rgba(201,145,83,1)")
+                    .attr("height", 10);
+                    //.attr("patternTransform", "rotate(45)");
+                var fillMarecageRectangle2 = fillMarecage.append("rect")
+                    .attr("height", 10)
+                    .attr("width", 10)
+                    .attr("fill", "rgba(201,145,83,1)"); 
+                var fillMarecageRectangle = fillMarecage.append("rect")
+                    .attr("height", 5)
+                    .attr("width", 5)
+                    .attr("fill", "rgba(80,130,156,1)"); 
+                    
+                var fillIlot = svg.append("pattern")
+                    .attr("id", "ilot")
+                    .attr("patternUnits", "userSpaceOnUse")
+                    .attr("width", 10)
+                    .style("fill", "rgba(201,145,83,1)")
+                    .attr("height", 10);
+                    //.attr("patternTransform", "rotate(45)");
+                var fillIlotRectangle2 = fillIlot.append("rect")
+                    .attr("height", 10)
+                    .attr("width", 10)
+                    .attr("fill", "rgba(80,130,156,1)"); 
+                var fillIlotRectangle = fillIlot.append("rect")
+                    .attr("height", 5)
+                    .attr("width", 5)
+                    .attr("fill", "rgba(201,145,83,1)"); 
+
+                        
                 ///////////////////////////////////////////////////////////////////////////
                 ////////////////////// Draw hexagons and color them ///////////////////////
                 ///////////////////////////////////////////////////////////////////////////
@@ -209,22 +276,28 @@
                         return "M" + d.x + "," + d.y + hexbin.hexagon();
                     })
                     .attr("stroke", function (d,i) {
-                        return "#fff";
+                        return "#000";
                     })
-                    .attr("stroke-width", "1px")
+                    .attr("stroke-width", "0.25px")
                     .style("fill", function (d,i) {
                         return color[i];
                     })
+//                    .style("fill", "url(#circles-5)")
                     .attr("groundstyle", function (d,i) {
                         return groundstyle[i];
                     }) 
-                    //.on("mouseover", mover)
-                    //.on("mouseout", mout)
+//                    .attr("fill", "url(#marecage" + ")")
+//                    .style("background", "rgba(201,145,83,1)")
+                    .on("mouseover", mover)
+                    .on("mouseout", mout)
                     .on("click", mclick)
                     ;
             }
             
             computeboard();
+            
+            
+
             
         </script>
 

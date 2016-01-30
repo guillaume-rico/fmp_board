@@ -70,9 +70,11 @@
             // Eau : 5f788c
             return "rgba(80,130,156,1)";
           } else if (slope == "i") {
-            return "rgba(0,255,255,1)";
+              return "url(#ilot)";
+            return "rgba(60,176,109,1)";
           } else if (slope == "a") {
-            return "rgba(0,255,128,1)";
+              return "url(#marecage)";
+            return "rgba(149,169,67,1)";
           } else if (slope == "s") {
             return "rgba(201,145,83,1)";
           } else {
@@ -224,7 +226,7 @@
         statAll[6] = [75,0,10,15,5];
         // Eau
         statAll[7] = [0,0,0,5,95];
-        nbZone = 7;
+        nbZone = 8;
         
         if (this.nbCol < this.nbRow) {
             dimensionMin = this.nbCol / 2;
