@@ -133,10 +133,28 @@
         
         for (var i = 0 ; i < (nbMountain * this.nbCol * this.nbRow) ; i++) {
 
-        
-            x = Math.round(Math.random() * this.nbCol);
-            
             y = Math.round(Math.random() * this.nbRow);
+            if (this.hexagone) {
+                // 3 Cas : debut milieu et fin 
+                if (y < (1 + (this.nbCol - 5 ) / 4)) {
+                    var startX = Math.ceil(this.nbCol / 2) - 2 - 2 * y;
+                    if (startX < 0) startX = 0;
+                    var endX = Math.ceil(this.nbCol / 2) + 1 + 2 * y;
+                    if (endX > this.nbCol) endX =this.nbCol;
+                } else if (y < this.nbCol - (1 + (this.nbCol - 5 ) / 4)) {
+                    var startX = 0;
+                    var endX = this.nbCol;
+                } else {
+                    var startX = Math.ceil(this.nbCol / 2) - 1 - 2 * (this.nbCol - 1 - y);
+                    if (startX < 0) startX = 0;
+                    var endX = Math.ceil(this.nbCol / 2) + 2 * (this.nbCol - 1 - y);
+                    if (endX > this.nbCol) endX =this.nbCol;
+                }
+            } else {
+                var startX = 0;
+                var endX = this.nbCol;
+            }
+            x = Math.round(Math.random() * (endX - startX) + startX);
         
             this.set(x , y , 100);
             
@@ -171,7 +189,7 @@
                 Xoffset = Math.round(Math.random() * 2.99 - 1.5);
                 Yoffset = Math.round(Math.random() * 2.99 - 1.5);
                 
-                if ((actualX + Xoffset) < 0 || (actualX + Xoffset) > (this.nbRow - 1)) {
+                if ((actualX + Xoffset) < startX || (actualX + Xoffset) > (endX - 1)) {
                     Yoffset = 0
                 }
                 if ((actualY + Yoffset) < 0 || (actualY + Yoffset) > (this.nbCol - 1)) {
@@ -221,6 +239,9 @@
                     var endX = Math.ceil(this.nbCol / 2) + 2 * (this.nbCol - 1 - y);
                     if (endX > this.nbCol) endX =this.nbCol;
                 }
+            } else {
+                var startX = 0;
+                var endX = this.nbCol;
             }
             
             for (var x = startX ; x < endX; x++) {
