@@ -59,23 +59,24 @@
 		</div>
         <div class="control">
             <div class="size">
-                largeur : <input id="largeur" type="text" size="10" value="37">
-                hauteur : <input id="hauteur" type="text" size="10" value="23">
-                 <input id="valider" type="button" size="10" value="Recharger" onclick="computeboard();">
-                 <input id="initialise_origine" type="button" size="10" value="Carte originale" onclick="initboard('origin');">
+                <p>
+                    largeur : <input id="largeur" type="text" size="10" value="37">
+                    hauteur : <input id="hauteur" type="text" size="10" value="23">
+                    <input id="hexagone" type="checkbox" name="choix1" value="1" > Hexagone ?
+                    <input id="valider" type="button" size="10" value="Recharger" onclick="computeboard(document.getElementById('hexagone').checked);">
+                    <input id="initialise_origine" type="button" size="10" value="Carte originale" onclick="initboard('origin');">
+                </p>
             <div>
             <div class="download">
-                 <input id="valider" type="button" size="10" value="Telecharger" onclick="download();" style="float:left;" >
-                 <p>Penser à télécharger les fichiers suivants dans le même dossier <a href="https://github.com/guillaume-rico/fmp_board/raw/master/charbon.png" download="charbon.png">charbon.png</a> & <a href="https://github.com/guillaume-rico/fmp_board/raw/master/sand.JPG" download="sand.JPG">sand.JPG</a> </p>
+                <p><input id="preview" type="checkbox" name="choix1" value="1" checked > Preview
+                <input id="valider" type="button" size="10" value="Telecharger" onclick="download(document.getElementById('preview').checked);"  >
+                Penser à télécharger les fichiers suivants dans le même dossier <a href="https://github.com/guillaume-rico/fmp_board/raw/master/charbon.png" download="charbon.png">charbon.png</a> & <a href="https://github.com/guillaume-rico/fmp_board/raw/master/sand.JPG" download="sand.JPG">sand.JPG</a> </p>
             <div>
         <div>
 
         
 		<div id="chart"></div>
 		
-<!-- <svg height="10" width="10" xmlns="http://www.w3.org/2000/svg" version="1.1"> <defs> <pattern id="" patternUnits="" width="10" height="10"> <image xlink:href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHdpZHRoPScxMCcgaGVpZ2h0PScxMCc+CiAgPHJlY3Qgd2lkdGg9JzEwJyBoZWlnaHQ9JzEwJyBmaWxsPSd3aGl0ZScgLz4KICA8Y2lyY2xlIGN4PSczJyBjeT0nMycgcj0nMycgZmlsbD0nYmxhY2snLz4KPC9zdmc+Cg==" x="0" y="0" width="10" height="10"> </image> </pattern> </defs> </svg> -->
-
-                        
 		<script type="text/javascript">
         
             // A faire :
@@ -139,7 +140,7 @@
             var svg;
             var nbRow;
             var nbCol;
-            function computeboard(newnbRow = 0, newnbCol = 0, groundstyle = "") {
+            function computeboard(hexagone = false, newnbRow = 0, newnbCol = 0, groundstyle = "") {
     
 
                 //The next lines should be run, but this seems to go wrong on the first load in bl.ocks.org
@@ -156,8 +157,22 @@
                 if (newnbCol == 0 ) {            
                     newnbCol = parseInt(document.getElementById("largeur").value);
                 }
-                nbRow = newnbRow;
-                nbCol = newnbCol;
+                
+                // Si c'est un hexagone, on autise que les largeurs suivantes 
+                // 5 9 13 17 
+                if (hexagone) {
+                    nbRow = (Math.floor((newnbCol - 2) / 4) + 1) * 4 + 1;
+                    nbCol = (Math.floor((newnbCol - 2) / 4) + 1) * 4 + 1;
+                    
+                    // On met a jour l'affichage 
+                    document.getElementById("largeur").value =nbRow;
+                    document.getElementById("hauteur").value= nbCol;
+                } else {
+                    nbRow = newnbRow;
+                    nbCol = newnbCol;
+                }
+                
+
                 
 
                 //The number of columns and rows of the heatmap
@@ -180,8 +195,8 @@
 
                 //Calculate the center positions of each hexagon	
                 var points = [];
-                    for (var j = 0; j < MapRows; j++) {
-                for (var i = 0; i < MapColumns; i++) {
+                for (var j = 0; j < MapRows; j++) {
+                    for (var i = 0; i < MapColumns; i++) {
                         points.push([hexRadius * i * 1.5, hexRadius * j * 1.75]);
                     }//for j
                 }//for i
@@ -197,13 +212,13 @@
                 //var height = display.height = window.innerHeight;
                 // On calcul la taille de la grille a générer
                 if (groundstyle == "") {
-                    var terrain = new Terrain(nbCol,nbRow);
+                    var terrain = new Terrain(nbCol,nbRow,hexagone);
                     // On réalise le tour de la carte
                     terrain.tourdecarte();
                     //terrain.generate();
                     terrain.stat();
                     // On ajoute les montagne 0.0293
-                    terrain.mountain(0.03);
+                    terrain.mountain(0.0293);
                     groundstyle = terrain.draw();
                 }
                 

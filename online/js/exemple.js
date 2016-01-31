@@ -69,5 +69,5 @@ function initboard (map) {
         }
     }
     
-    computeboard(height, width, groundstyle);
+    computeboard(false, height, width, groundstyle);
 }

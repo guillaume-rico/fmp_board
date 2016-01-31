@@ -1,15 +1,16 @@
 
-function download() {
-  var element = document.createElement('a');
-  element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(tosvg()));
-  element.setAttribute('download', 'fmbboard.svg');
+function download(preview) {
 
-  element.style.display = 'none';
-  document.body.appendChild(element);
+    var element = document.createElement('a');
+    element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(tosvg(preview)));
+    element.setAttribute('download', 'fmbboard.svg');
 
-  element.click();
+    element.style.display = 'none';
+    document.body.appendChild(element);
 
-  document.body.removeChild(element);
+    element.click();
+
+    document.body.removeChild(element);
 }
 
 var side = 20;
@@ -45,16 +46,23 @@ function drawHex(startX, startY, style = "none", expand = 1, shiftX = 0, shiftY 
     var x6 =  x5 - t;
     var y6 =  y5 - r;
 
-    var retstr = ""
+    var retstr = "";
+    var styleModif = "";
 	if (style == "none") {
 		retstr = retstr.concat("        <polygon points=\"" + x1 + "," +y1 + " " + x2 + "," +y2 + " " + x3 + "," +y3 + " " + x4 + "," + y4 + " " + x5 + "," +y5 + " " + x6 + "," +y6 +"\" />");
 	}
 	if (style == "bord") {
+        styleModif = "style=\"stroke:none; fill: #ffffff;filter:url(#filterMontagne)\""
 		retstr = retstr.concat("        <polygon points=\"" + x1 + "," +y1 + " " + x2 + "," +y2 + " " + x3 + "," +y3 + " " + x4 + "," + y4 + " " + x5 + "," +y5 + " " + x6 + "," +y6 +"\" style=\"stroke:none; fill: #ffffff;filter:url(#filterMontagne)\" />");
 	}
 	if (style == "stroke") {
+        styleModif = "style=\"stroke:rgb(0,0,0);stroke-width:0.25;fill: none\""
 		retstr = retstr.concat("        <polygon points=\"" + x1 + "," +y1 + " " + x2 + "," +y2 + " " + x3 + "," +y3 + " " + x4 + ","  +y4 + " " + x5 + "," +y5 + " " + x6 + "," +y6 +"\" style=\"stroke:rgb(0,0,0);stroke-width:0.25;fill: none\" />");
 	}
+    if (style == "preview") {
+        styleModif = "style=\"stroke:none; fill: #ffffff\""
+    }
+    retstr = retstr.concat("        <polygon points=\"" + x1 + "," +y1 + " " + x2 + "," +y2 + " " + x3 + "," +y3 + " " + x4 + ","  +y4 + " " + x5 + "," +y5 + " " + x6 + "," +y6 +"\" " + styleModif + " />");
 
     x1 =  x1 + shiftX;
     y1 =  y1 + shiftY;
@@ -212,14 +220,12 @@ function drawIlot (startX, startY, style = "none") {
     return retstr;
 }
 
-function tosvg () {
+function tosvg (preview) {
     
     // On Calcul la taille de l'image compete
     var outputWidth  = (t + side) * nbCol + t;
     var outputHeigth = h * nbRow + r;
-    
-    var preview = 1;
-    
+
     var retstr = '\
 <?xml version="1.0" standalone="no"?> \n\
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" \n\
@@ -294,7 +300,7 @@ function tosvg () {
     retstr = retstr.concat('         <clipPath id="clip_water"> \n');
     for (var i = 0; i < nbCol; i++) {
         for (var j = 0 ; j < nbRow ; j++) {
-            localGrndStyle = shortintoval(groundstyle[ i + nbRow * j]);
+            localGrndStyle = shortintoval(groundstyle[ i + nbCol * j]);
             if (localGrndStyle == "e"  || localGrndStyle == "i") {
                 retstr = retstr.concat(drawHex(shiftX * i,h * j + (i % 2) * r) + "\n");
             }
@@ -307,7 +313,7 @@ function tosvg () {
  retstr = retstr.concat('         <mask id="mask_sand"> \n');
     for (var i = 0; i < nbCol; i++) {
         for (var j = 0 ; j < nbRow ; j++) {
-            localGrndStyle = shortintoval(groundstyle[ i + nbRow * j]);
+            localGrndStyle = shortintoval(groundstyle[ i + nbCol * j]);
             if (localGrndStyle == "s"  || localGrndStyle == "a") {
                 retstr = retstr.concat(drawHex(shiftX * i,h * j + (i % 2) * r,"bord") + "\n");
             }
@@ -321,9 +327,14 @@ function tosvg () {
     drawHexStr = "";
     for (var i = 0; i < nbCol; i++) {
         for (var j = 0 ; j < nbRow ; j++) {
-            localGrndStyle = shortintoval(groundstyle[ i + nbRow * j]);
+            localGrndStyle = shortintoval(groundstyle[ i + nbCol * j]);
             if (localGrndStyle == "m") {
-                retstr = retstr.concat(drawHex(shiftX * i,h * j + (i % 2) * r,"bord",1.2,-15,15) + "\n");
+                if (!preview) {
+                    retstr = retstr.concat(drawHex(shiftX * i,h * j + (i % 2) * r,"bord",1.2,-15,15) + "\n");
+                } else {
+                    // Si on est en preview, les hexagones doivent faire la taille de la carte
+                    retstr = retstr.concat(drawHex(shiftX * i,h * j + (i % 2) * r,"preview") + "\n");
+                }
             }
         }
     }
@@ -334,7 +345,7 @@ function tosvg () {
  retstr = retstr.concat('         <mask id="mask_marecage"> \n');
     for (var i = 0; i < nbCol; i++) {
         for (var j = 0 ; j < nbRow ; j++) {
-            localGrndStyle = shortintoval(groundstyle[ i + nbRow * j]);
+            localGrndStyle = shortintoval(groundstyle[ i + nbCol * j]);
             if (localGrndStyle == "a") {
                 retstr = retstr.concat(drawIlot(shiftX * i,h * j + (i % 2) * r,"bord") + "\n");
             }
@@ -342,29 +353,39 @@ function tosvg () {
     }
  retstr = retstr.concat('         </mask> \n');
   retstr = retstr.concat('    </defs> \n');
-    if (preview == 0) {
+  
+    // On ajout l'image du sol sur l'ensemble de la carte
+    if (!preview) {
         retstr = retstr.concat('     <image xlink:href=\"imageNameForGround\" x=\"0\" y=\"0\" height=\"' + outputHeigth + '\" width=\"' + outputWidth + '\" preserveAspectRatio=\"none\"  /> \n');
     } else {
         retstr = retstr.concat('     <rect x=\"0\" y=\"0\" width=\"' + outputWidth + '\" height=\"' + outputHeigth + '\" style=\"fill:#CC9959\"  /> \n');
     }
+    
+    // On ajoute de l'eau uniquement ou c'est nécessaire
     retstr = retstr.concat('     <rect x=\"0\" y=\"0\" width=\"' + outputWidth + '\" height=\"' + outputHeigth + '\" style=\"fill:#5f788c\" clip-path=\"url(#clip_water)\" /> \n');
-    if (preview == 0) {
+    
+    // On fait dépasser de la terre sur l'eau
+    if (!preview) {
         retstr = retstr.concat('     <image xlink:href=\"imageNameForGround\" x=\"0\" y=\"0\" height=\"' + outputHeigth + '\" width=\"' + outputWidth + '\" preserveAspectRatio=\"none\" mask=\"url(#mask_sand)\"  /> \n');
     } else {
         retstr = retstr.concat('     <rect x=\"0\" y=\"0\" width=\"' + outputWidth + '\" height=\"' + outputHeigth + '\" style=\"fill:#CC9959\" mask=\"url(#mask_sand)\"  />" \n');
     }
+    
+    // On ajoute de l'eau pour les marécages
     retstr = retstr.concat('     <rect x=\"0\" y=\"0\" width=\"' + outputWidth + '\" height=\"' + outputHeigth + '\" style=\"fill:#5f788c\" mask=\"url(#mask_marecage)\" /> \n');
-    if (preview == 0) {
+    
+    // On ajoute des montagnes
+    if (!preview) {
         retstr = retstr.concat('     <rect x=\"0\" y=\"0\" width=\"' + outputWidth + '\" height=\"' + outputHeigth + '\" mask=\"url(#mask_charbon_ombre)\"  style=\"fill:#000000\" /> \n');
         retstr = retstr.concat('     <image xlink:href=\"${imageNameForMountain}\" x=\"0\" y=\"0\" height=\"' + outputHeigth + '\" width=\"' + outputWidth + '\" preserveAspectRatio=\"none\" mask=\"url(#mask_charbon)\" /> \n');
     } else {
-        retstr = retstr.concat('     <rect x=\"0\" y=\"0\" width=\"' + outputWidth + '\" height=\"' + outputHeigth + '\" mask=\"url(#mask_charbon_ombre)\"  style=\"fill:#000000\" /> \n');
+        retstr = retstr.concat('     <rect x=\"0\" y=\"0\" width=\"' + outputWidth + '\" height=\"' + outputHeigth + '\" mask=\"url(#mask_charbon)\"  style=\"fill:#000000\" /> \n');
     }
      
     // On dessine les hexagones
     for (var i = 0; i < nbCol; i++) {
         for (var j = 0 ; j < nbRow ; j++) {
-            localGrndStyle = shortintoval(groundstyle[ i + nbRow * j]);
+            localGrndStyle = shortintoval(groundstyle[ i + nbCol * j]);
             if (localGrndStyle != "" && localGrndStyle != "u") {
                 retstr = retstr.concat(drawHex((shiftX * i),(h * j + (i % 2) * r),"stroke") + "\n");
             }

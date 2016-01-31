@@ -98,8 +98,8 @@
         }
         
       
-      function Terrain(nbCol,nbRow) {
-          
+      function Terrain(nbCol,nbRow,hexagone) {
+
         var sizetemp = 0;
         if (nbRow > nbCol) {
             for (var i = 1; sizetemp < nbRow; i++ ) {
@@ -115,6 +115,7 @@
         this.max = this.size - 1;
         this.nbCol = nbCol;
         this.nbRow = nbRow;
+        this.hexagone = hexagone;
         this.map = new Float32Array(this.size * this.size);
       }
       
@@ -131,8 +132,10 @@
     Terrain.prototype.mountain = function(nbMountain) {
         
         for (var i = 0 ; i < (nbMountain * this.nbCol * this.nbRow) ; i++) {
+
         
             x = Math.round(Math.random() * this.nbCol);
+            
             y = Math.round(Math.random() * this.nbRow);
         
             this.set(x , y , 100);
@@ -198,9 +201,30 @@
       
     // Génération du tour de carte 
     Terrain.prototype.tourdecarte = function() {
-        for (var x = 0 ; x < (this.nbCol); x++) {
-            for (var y = 0 ; y < (this.nbRow); y++) {
-                if (x == 0 || y == 0 || x == (this.nbCol - 1) || y == (this.nbRow - 1)) {
+        
+        
+        for (var y = 0 ; y < (this.nbRow); y++) {
+            
+            if (this.hexagone) {
+                // 3 Cas : debut milieu et fin 
+                if (y < (1 + (this.nbCol - 5 ) / 4)) {
+                    var startX = Math.ceil(this.nbCol / 2) - 2 - 2 * y;
+                    if (startX < 0) startX = 0;
+                    var endX = Math.ceil(this.nbCol / 2) + 1 + 2 * y;
+                    if (endX > this.nbCol) endX =this.nbCol;
+                } else if (y < this.nbCol - (1 + (this.nbCol - 5 ) / 4)) {
+                    var startX = 0;
+                    var endX = this.nbCol;
+                } else {
+                    var startX = Math.ceil(this.nbCol / 2) - 1 - 2 * (this.nbCol - 1 - y);
+                    if (startX < 0) startX = 0;
+                    var endX = Math.ceil(this.nbCol / 2) + 2 * (this.nbCol - 1 - y);
+                    if (endX > this.nbCol) endX =this.nbCol;
+                }
+            }
+            
+            for (var x = startX ; x < endX; x++) {
+                if (x == startX || y == 0 || x == (endX - 1) || y == (this.nbRow - 1)) {
                     
                     var aleaExt = Math.round(Math.random() * 10000)/100.0;
                     var newValue = 1;
@@ -262,13 +286,37 @@
             dimensionMin = this.nbRow / 2;
         }
 
-        for (var i = 0;i < this.nbCol; i++) {
-                for (var j = 0;j < this.nbRow; j++) {
+        for (var j = 0;j < this.nbRow; j++) {
+            
+            if (this.hexagone) {
+                
+                // 3 Cas : debut milieu et fin 
+                if (j < (1 + (this.nbCol - 5 ) / 4)) {
+                    var startX = Math.ceil(this.nbCol / 2) - 2 - 2 * j;
+                    if (startX < 0) startX = 0;
+                    var endX = Math.ceil(this.nbCol / 2) + 1 + 2 * j;
+                    if (endX > this.nbCol) endX =this.nbCol;
+                } else if (j < this.nbCol - (1 + (this.nbCol - 5 ) / 4)) {
+                    var startX = 0;
+                    var endX = this.nbCol;
+                } else {
+                    var startX = Math.ceil(this.nbCol / 2) - 1 - 2 * (this.nbCol - 1 - j);
+                    if (startX < 0) startX = 0;
+                    var endX = Math.ceil(this.nbCol / 2) + 2 * (this.nbCol - 1 - j);
+                    if (endX > this.nbCol) endX =this.nbCol;
+                }
+
+            } else {
+                var startX = 0;
+                var endX = this.nbCol;
+            }
+            
+            for (var i = startX;i < endX; i++) {
                 
                     rand = (Math.round(Math.random() * 10000)/100.0);
                 
                     // Si c'est le tour de la carte, on ne fait rien
-                    if (i == 0 || j == 0 || i == (this.nbCol - 1) || j == (this.nbRow - 1)) {
+                    if (i == startX || j == 0 || i == (endX - 1) || j == (this.nbRow - 1)) {
 
                     } else {
                         // On recherche les cellules autour
