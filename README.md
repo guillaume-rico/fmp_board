@@ -74,4 +74,10 @@ Dans cette extension, il y a 3 plateaux en double (dans le PDF précédent, les 
 
 Perlin noise
 
+## Code 
+
+http://www.redblobgames.com/grids/hexagons/
+
+
+
     

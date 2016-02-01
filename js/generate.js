@@ -97,6 +97,27 @@
           }
         }
         
+    //“odd-q” vertical layout
+    function offsetToCube (col, row) {
+        // convert odd-q offset to cube
+        return {
+            x: col,
+            z: row - (col - (col&1)) / 2,
+            y: -col - row + (col - (col&1)) / 2,
+        };
+    }
+    function cubeToOffset (x, y) {
+        // convert cube to odd-q offset
+        return {
+            col : x,
+            row : z + (x - (x&1)) / 2
+        };
+    }    
+    function cube_distance(a, b) {
+        return (Math.abs(a.x - b.x) + Math.abs(a.y - b.y) + Math.abs(a.z - b.z)) / 2;
+    }
+      
+      
       
       function Terrain(nbCol,nbRow,hexagone) {
 
@@ -116,7 +137,13 @@
         this.nbCol = nbCol;
         this.nbRow = nbRow;
         this.hexagone = hexagone;
-        this.map = new Float32Array(this.size * this.size);
+        //this.map = new Float32Array(this.size * this.size);
+        
+        this.map = new Array(this.size * this.size);
+        for (var i = 0; i < this.size * this.size; i++) {
+          this.map[i] = 0;
+        }
+        
       }
       
       Terrain.prototype.get = function(x, y) {
@@ -128,27 +155,36 @@
         this.map[y + this.size * x] = val;
       };
       
-    Terrain.prototype.hexagoneLimits = function(row) {
-        if (this.hexagone) {
+      function hexLimits(hexagone,nbCol,row) {
+        if (hexagone) {
             // 3 Cas : debut milieu et fin 
-            if (row < (1 + (this.nbCol - 5 ) / 4)) {
-                var startX = Math.ceil(this.nbCol / 2) - 2 - 2 * row;
+            if (row < (1 + (nbCol - 5 ) / 4)) {
+                var startX = Math.ceil(nbCol / 2) - 2 - 2 * row;
                 if (startX < 0) startX = 0;
-                var endX = Math.ceil(this.nbCol / 2) + 1 + 2 * row;
-                if (endX > this.nbCol) endX =this.nbCol;
-            } else if (row < this.nbCol - (1 + (this.nbCol - 5 ) / 4)) {
+                var endX = Math.ceil(nbCol / 2) + 1 + 2 * row;
+                if (endX > nbCol) endX =nbCol;
+            } else if (row < nbCol - (1 + (nbCol - 5 ) / 4)) {
                 var startX = 0;
-                var endX = this.nbCol;
+                var endX = nbCol;
             } else {
-                var startX = Math.ceil(this.nbCol / 2) - 1 - 2 * (this.nbCol - 1 - row);
+                var startX = Math.ceil(nbCol / 2) - 1 - 2 * (nbCol - 1 - row);
                 if (startX < 0) startX = 0;
-                var endX = Math.ceil(this.nbCol / 2) + 2 * (this.nbCol - 1 - row);
-                if (endX > this.nbCol) endX =this.nbCol;
+                var endX = Math.ceil(nbCol / 2) + 2 * (nbCol - 1 - row);
+                if (endX > nbCol) endX =nbCol;
             }
         } else {
             var startX = 0;
-            var endX = this.nbCol;
+            var endX = nbCol;
         }
+        return [startX, endX];
+      };
+      
+    Terrain.prototype.hexagoneLimits = function(row) {
+        
+        limits = hexLimits(this.hexagone,this.nbCol,row);
+        var startX = limits[0];
+        var endX = limits[1];
+
         return [startX, endX];
     };
       
@@ -303,6 +339,11 @@
         } else {
             dimensionMin = this.nbRow / 2;
         }
+        
+        // Position cubique du centre
+        centertCube  = offsetToCube(Math.floor(this.nbCol / 2) , Math.floor(this.nbRow / 2));
+        dimensionMax = cube_distance(centertCube, offsetToCube(Math.floor(this.nbCol / 2) , 0));
+        
 
         for (var j = 0;j < this.nbRow; j++) {
             
@@ -382,12 +423,23 @@
                         distanceBas  = (this.nbRow - 1 - j);
                         distanceDroite = (this.nbCol - 1 - i);
                         distance        = Math.min(distanceHaut,distanceGauche,distanceDroite,distanceBas);
+                        
+                        // Si c'est un hexagone ou un octogone
+                        if (this.hexagone) {
+                            // Position cubique du centre :
+                            pointCube    = offsetToCube(i , j);
+                            distanceCube = cube_distance(centertCube, pointCube);
+                            distanceCubeNormalisee = Math.round(nbZone * distanceCube / dimensionMax);
+                            distanceAll = nbZone - distanceCubeNormalisee;
+                        } else {
                         // La distance pour les stat de all doit être entre 0 et 4
-                        distanceAll     = Math.round(nbZone * 1.0 * distance / dimensionMin);
-                        if (distanceAll > 7 ) {
-                            distanceAll = 3;
+                            distanceAll     = Math.round(nbZone * 1.0 * distance / dimensionMin);
+                            if (distanceAll > nbZone ) {
+                                distanceAll = nbZone;
+                            }  
                         }
-         
+
+
                         coef = 1.0;
          
                         proba["s"] = ((proba["s"] + coef *  statAll[distanceAll][0]) / (coef + 1));

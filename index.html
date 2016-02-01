@@ -54,9 +54,8 @@
 	</head>
 	<body>
 	    <div class="header">
-			Génération de carte pour Full Métal Planète
+			Génération de carte pour Full Métal Planète (<a href="https://github.com/guillaume-rico/fmp_board">GitHub</a>)
 			<div class="hint">Cliquer sur une case pour changer la nature du sol.</div>
-			<div class="hint">Attention, ne fonctionne pas avec Internet Explorer 9.</div>
 		</div>
         <div class="control">
             <div class="size">
@@ -67,17 +66,18 @@
                     <input id="valider" type="button" size="10" value="Recharger" onclick="computeboard(document.getElementById('hexagone').checked);">
                     <input id="initialise_origine" type="button" size="10" value="Carte originale" onclick="initboard('origin');">
                 </p>
-            <div>
+            </div>
             <div class="download">
                 <p><input id="preview" type="checkbox" name="choix1" value="1" checked > Preview
                 <input id="valider" type="button" size="10" value="Telecharger" onclick="download(document.getElementById('preview').checked);"  >
                 Penser à télécharger les fichiers suivants dans le même dossier <a href="https://github.com/guillaume-rico/fmp_board/raw/master/charbon.png" download="charbon.png">charbon.png</a> & <a href="https://github.com/guillaume-rico/fmp_board/raw/master/sand.JPG" download="sand.JPG">sand.JPG</a> </p>
-            <div>
-        <div>
+            </div>
+        </div>
 
         
 		<div id="chart"></div>
 		
+        
 		<script type="text/javascript">
         
             // A faire :
@@ -134,7 +134,7 @@
             var margin = {
                 top: 30,
                 right: 20,
-                bottom: 50,
+                bottom: 0,
                 left: 50
             };
 
@@ -149,7 +149,7 @@
 
                 //The next lines should be run, but this seems to go wrong on the first load in bl.ocks.org
                 var width = $(window).width() - margin.left - margin.right - 40;
-                var height = $(window).height() - margin.top - margin.bottom - 140;
+                var height = $(window).height() - margin.top - margin.bottom - 240;
                 //So I set it fixed to
                 //var width = 900;
                 //var height = 900;
@@ -200,7 +200,7 @@
                 //Calculate the center positions of each hexagon	
                 var points = [];
                 for (var j = 0; j < MapRows; j++) {
-                    for (var i = 0; i < MapColumns; i++) {
+                    for (var i = 0; i < nbCol; i++) {
                         points.push([hexRadius * i * 1.5, hexRadius * j * 1.75]);
                     }//for j
                 }//for i
@@ -311,7 +311,11 @@
                         return "M" + d.x + "," + d.y + hexbin.hexagon();
                     })
                     .attr("stroke", function (d,i) {
-                        return "#000";
+                        if (groundstyle[i] != 0) {
+                            return "#000";
+                        } else {
+                            return "#fff";
+                        }
                     })
                     .attr("stroke-width", "0.25px")
                     .style("fill", function (d,i) {
@@ -337,6 +341,7 @@
 
             
         </script>
+        
 
 	</body>
 </html>

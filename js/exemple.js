@@ -54,9 +54,13 @@ function initboard (map) {
 
     var width = originalsurface[0].length;
     var height = originalsurface.length;
-
     var count = 0;
-
+    
+    // On met a jour les variables affichées à l'écran
+    document.getElementById("largeur").value = width;
+    document.getElementById("hauteur").value = height;
+    document.getElementById('hexagone').checked = false;
+    
     for (var y = 0; y < height ; y++) {
         for (var x = 0; x < width ; x++) {
             color[count] = originalsurface[y][x];
