@@ -188,18 +188,34 @@
         return [startX, endX];
     };
       
+    // On renvoie un entier aléatoire entre une valeur min (incluse)
+    // et une valeur max (exclue).
+    // Attention : si on utilisait Math.round(), on aurait une distribution
+    // non uniforme !
+    function getRandomInt(min, max) {
+        return Math.floor(Math.random() * (max - min)) + min;
+    }
+      
+    // On renvoie un entier aléatoire entre une valeur min (incluse)
+    // et une valeur max (incluse).
+    // Attention : si on utilisait Math.round(), on aurait une distribution
+    // non uniforme !
+    function getRandomIntInclusive(min, max) {
+        return Math.floor(Math.random() * (max - min +1)) + min;
+    }
+      
     // Génère des montagnes sur la carte
     Terrain.prototype.mountain = function(nbMountain) {
         
         for (var i = 0 ; i < (nbMountain * this.nbCol * this.nbRow) ; i++) {
 
-            y = Math.round(Math.random() * this.nbRow);
+            y = getRandomInt(0, this.nbRow);
             
             limits = this.hexagoneLimits(y);
             var startX = limits[0];
             var endX = limits[1];
 
-            x = Math.round(Math.random() * (endX - startX - 1) + startX);
+            x = getRandomInt(startX + 1, endX - 1);
         
             this.set(x , y , 100);
             
@@ -227,24 +243,19 @@
             
             actualX = x;
             actualY = y;
+            var nbSearch = 0;
             var listOfEmplacement = [];
             for (var ext = 0 ; ext < extansion ; ext++) {
             
                 // On se déplace a partir de l'emplacement actuel
-                Xoffset = Math.round(Math.random() * 2.99 - 1.5);
-                Yoffset = Math.round(Math.random() * 2.99 - 1.5);
-                if ((actualY + Yoffset) < 0 || (actualY + Yoffset) > (this.Row - 1)) {
+                Xoffset = getRandomIntInclusive(-1,1);
+                Yoffset = getRandomIntInclusive(-1,1);
+                
+                // On vérifie qu'une donnée peut être présente à cette endroit
+                if (this.get((actualX + Xoffset), (actualY + Yoffset)) == 0) {
                     Yoffset = 0;
+                    Xoffset = 0;
                 }
-                
-                locallimits = this.hexagoneLimits(actualY + Yoffset);
-                var localstartX = locallimits[0];
-                var localendX = locallimits[1];
-                
-                if ((actualX + Xoffset) < localstartX || (actualX + Xoffset) > (localendX - 1)) {
-                    Yoffset = 0
-                }
-
 
                 actualX = (actualX + Xoffset);
                 actualY = (actualY + Yoffset);
@@ -256,9 +267,16 @@
                     listOfEmplacement.push(actualX + "-" + actualY);
                     
                     this.set(actualX , actualY , 100);
-                    
+                    nbSearch = 0;
                 } else {
                     ext--;
+                    
+                    // On limite le nombre de recherche à 5
+                    nbSearch++;
+                    if (nbSearch > 5) {
+                        ext = extansion;
+                        
+                    }
                 }
 
             }
