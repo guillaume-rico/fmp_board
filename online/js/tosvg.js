@@ -23,8 +23,20 @@ var shiftX = t + side;
 
 
 var drawHexStr = "";
-function drawHex(startX, startY, style = "none", expand = 1, shiftX = 0, shiftY = 0) {
+function drawHex(startX, startY, style, expand, shiftX, shiftY) {
 
+    if (typeof style === "undefined" || style === null) { 
+        style = "none"; 
+    }
+    if (typeof expand === "undefined" || expand === null) { 
+        expand = 1; 
+    }
+    if (typeof shiftX === "undefined" || shiftX === null) { 
+        shiftX = 0; 
+    }
+    if (typeof shiftY === "undefined" || shiftY === null) { 
+        shiftY = 0; 
+    }
     // http://www.quarkphysics.ca/scripsi/hexgrid/
 
     var side2 =  Math.floor(side * expand);
@@ -162,7 +174,11 @@ function clipHex (startX, startY) {
 
 }
 
-function drawIlot (startX, startY, style = "none") {
+function drawIlot (startX, startY, style) {
+
+    if (typeof style === "undefined" || style === null) { 
+        style = "none"; 
+    }
 
 	var nbIlot =  Math.random() * 2 + 4;
 

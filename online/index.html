@@ -54,8 +54,9 @@
 	</head>
 	<body>
 	    <div class="header">
-			Génération de carte pour Full Metal Planet
-			<div class="hint">Cliquer sur une case pour changer la nature du sol</div>
+			Génération de carte pour Full Métal Planète
+			<div class="hint">Cliquer sur une case pour changer la nature du sol.</div>
+			<div class="hint">Attention, ne fonctionne pas avec Internet Explorer 9.</div>
 		</div>
         <div class="control">
             <div class="size">
@@ -140,21 +141,24 @@
             var svg;
             var nbRow;
             var nbCol;
-            function computeboard(hexagone = false, newnbRow = 0, newnbCol = 0, groundstyle = "") {
+            function computeboard(hexagone, newnbRow, newnbCol, groundstyle) {
     
+                if (typeof hexagone === "undefined" || hexagone === null) {            
+                    hexagone = false;
+                }
 
                 //The next lines should be run, but this seems to go wrong on the first load in bl.ocks.org
                 var width = $(window).width() - margin.left - margin.right - 40;
-                var height = $(window).height() - margin.top - margin.bottom - 120;
+                var height = $(window).height() - margin.top - margin.bottom - 140;
                 //So I set it fixed to
                 //var width = 900;
                 //var height = 900;
 
                 // On vient charger le nb de col et de ligne
-                if (newnbRow == 0 ) {            
+                if (typeof newnbRow === "undefined" || newnbRow === null) {            
                     newnbRow = parseInt(document.getElementById("hauteur").value);
                 }
-                if (newnbCol == 0 ) {            
+                if (typeof newnbCol === "undefined" || newnbCol === null) {            
                     newnbCol = parseInt(document.getElementById("largeur").value);
                 }
                 
@@ -211,7 +215,7 @@
                 //var width = display.width = window.innerWidth;
                 //var height = display.height = window.innerHeight;
                 // On calcul la taille de la grille a générer
-                if (groundstyle == "") {
+                if (typeof groundstyle === "undefined" || groundstyle === null) {
                     var terrain = new Terrain(nbCol,nbRow,hexagone);
                     // On réalise le tour de la carte
                     terrain.tourdecarte();

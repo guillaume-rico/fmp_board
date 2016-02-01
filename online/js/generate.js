@@ -128,33 +128,42 @@
         this.map[y + this.size * x] = val;
       };
       
+    Terrain.prototype.hexagoneLimits = function(row) {
+        if (this.hexagone) {
+            // 3 Cas : debut milieu et fin 
+            if (row < (1 + (this.nbCol - 5 ) / 4)) {
+                var startX = Math.ceil(this.nbCol / 2) - 2 - 2 * row;
+                if (startX < 0) startX = 0;
+                var endX = Math.ceil(this.nbCol / 2) + 1 + 2 * row;
+                if (endX > this.nbCol) endX =this.nbCol;
+            } else if (row < this.nbCol - (1 + (this.nbCol - 5 ) / 4)) {
+                var startX = 0;
+                var endX = this.nbCol;
+            } else {
+                var startX = Math.ceil(this.nbCol / 2) - 1 - 2 * (this.nbCol - 1 - row);
+                if (startX < 0) startX = 0;
+                var endX = Math.ceil(this.nbCol / 2) + 2 * (this.nbCol - 1 - row);
+                if (endX > this.nbCol) endX =this.nbCol;
+            }
+        } else {
+            var startX = 0;
+            var endX = this.nbCol;
+        }
+        return [startX, endX];
+    };
+      
     // Génère des montagnes sur la carte
     Terrain.prototype.mountain = function(nbMountain) {
         
         for (var i = 0 ; i < (nbMountain * this.nbCol * this.nbRow) ; i++) {
 
             y = Math.round(Math.random() * this.nbRow);
-            if (this.hexagone) {
-                // 3 Cas : debut milieu et fin 
-                if (y < (1 + (this.nbCol - 5 ) / 4)) {
-                    var startX = Math.ceil(this.nbCol / 2) - 2 - 2 * y;
-                    if (startX < 0) startX = 0;
-                    var endX = Math.ceil(this.nbCol / 2) + 1 + 2 * y;
-                    if (endX > this.nbCol) endX =this.nbCol;
-                } else if (y < this.nbCol - (1 + (this.nbCol - 5 ) / 4)) {
-                    var startX = 0;
-                    var endX = this.nbCol;
-                } else {
-                    var startX = Math.ceil(this.nbCol / 2) - 1 - 2 * (this.nbCol - 1 - y);
-                    if (startX < 0) startX = 0;
-                    var endX = Math.ceil(this.nbCol / 2) + 2 * (this.nbCol - 1 - y);
-                    if (endX > this.nbCol) endX =this.nbCol;
-                }
-            } else {
-                var startX = 0;
-                var endX = this.nbCol;
-            }
-            x = Math.round(Math.random() * (endX - startX) + startX);
+            
+            limits = this.hexagoneLimits(y);
+            var startX = limits[0];
+            var endX = limits[1];
+
+            x = Math.round(Math.random() * (endX - startX - 1) + startX);
         
             this.set(x , y , 100);
             
@@ -188,13 +197,18 @@
                 // On se déplace a partir de l'emplacement actuel
                 Xoffset = Math.round(Math.random() * 2.99 - 1.5);
                 Yoffset = Math.round(Math.random() * 2.99 - 1.5);
-                
-                if ((actualX + Xoffset) < startX || (actualX + Xoffset) > (endX - 1)) {
-                    Yoffset = 0
-                }
-                if ((actualY + Yoffset) < 0 || (actualY + Yoffset) > (this.nbCol - 1)) {
+                if ((actualY + Yoffset) < 0 || (actualY + Yoffset) > (this.Row - 1)) {
                     Yoffset = 0;
                 }
+                
+                locallimits = this.hexagoneLimits(actualY + Yoffset);
+                var localstartX = locallimits[0];
+                var localendX = locallimits[1];
+                
+                if ((actualX + Xoffset) < localstartX || (actualX + Xoffset) > (localendX - 1)) {
+                    Yoffset = 0
+                }
+
 
                 actualX = (actualX + Xoffset);
                 actualY = (actualY + Yoffset);
@@ -223,27 +237,10 @@
         
         for (var y = 0 ; y < (this.nbRow); y++) {
             
-            if (this.hexagone) {
-                // 3 Cas : debut milieu et fin 
-                if (y < (1 + (this.nbCol - 5 ) / 4)) {
-                    var startX = Math.ceil(this.nbCol / 2) - 2 - 2 * y;
-                    if (startX < 0) startX = 0;
-                    var endX = Math.ceil(this.nbCol / 2) + 1 + 2 * y;
-                    if (endX > this.nbCol) endX =this.nbCol;
-                } else if (y < this.nbCol - (1 + (this.nbCol - 5 ) / 4)) {
-                    var startX = 0;
-                    var endX = this.nbCol;
-                } else {
-                    var startX = Math.ceil(this.nbCol / 2) - 1 - 2 * (this.nbCol - 1 - y);
-                    if (startX < 0) startX = 0;
-                    var endX = Math.ceil(this.nbCol / 2) + 2 * (this.nbCol - 1 - y);
-                    if (endX > this.nbCol) endX =this.nbCol;
-                }
-            } else {
-                var startX = 0;
-                var endX = this.nbCol;
-            }
-            
+            limits = this.hexagoneLimits(y);
+            var startX = limits[0];
+            var endX = limits[1];
+
             for (var x = startX ; x < endX; x++) {
                 if (x == startX || y == 0 || x == (endX - 1) || y == (this.nbRow - 1)) {
                     
@@ -309,28 +306,9 @@
 
         for (var j = 0;j < this.nbRow; j++) {
             
-            if (this.hexagone) {
-                
-                // 3 Cas : debut milieu et fin 
-                if (j < (1 + (this.nbCol - 5 ) / 4)) {
-                    var startX = Math.ceil(this.nbCol / 2) - 2 - 2 * j;
-                    if (startX < 0) startX = 0;
-                    var endX = Math.ceil(this.nbCol / 2) + 1 + 2 * j;
-                    if (endX > this.nbCol) endX =this.nbCol;
-                } else if (j < this.nbCol - (1 + (this.nbCol - 5 ) / 4)) {
-                    var startX = 0;
-                    var endX = this.nbCol;
-                } else {
-                    var startX = Math.ceil(this.nbCol / 2) - 1 - 2 * (this.nbCol - 1 - j);
-                    if (startX < 0) startX = 0;
-                    var endX = Math.ceil(this.nbCol / 2) + 2 * (this.nbCol - 1 - j);
-                    if (endX > this.nbCol) endX =this.nbCol;
-                }
-
-            } else {
-                var startX = 0;
-                var endX = this.nbCol;
-            }
+            limits = this.hexagoneLimits(j);
+            var startX = limits[0];
+            var endX = limits[1];
             
             for (var i = startX;i < endX; i++) {
                 
