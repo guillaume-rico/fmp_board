@@ -2,11 +2,9 @@
 
 ## Intoduction
 
-Une nouvelle version est disponible ! Basée uniquement sur du Javascript, elle permet de générer des cartes à partir d'un navigateur web.
+Ce projet est une application web qui permet de générer une carte pour le jeu full métal planet.
 
-
-
-Ce projet est un script qui permet de générer une carte pour le jeu full métal planet à partir d'un tableau Excel.
+Une version en ligne est disponible ici : http://fmp.bulck.fr
 
 Exemple :
 
@@ -18,57 +16,8 @@ Carte d'origine :
 
 ![Image exemple](https://github.com/guillaume-rico/fmp_board/blob/master/example/map_origine_miniature.png)
 
-## Procédure :
 
-### Pré requis
-
-1. Installer tcl/tk  (Distribution disponible là : http://www.activestate.com/activetcl/downloads )
-
-2. Installer Inkscape
-
-3. Télécharger le projet dans un dossier
-
-### Génération aléatoire
-
-1. Exécuter le script : tclsh generation.tcl -rand -nbrow 23 -nbcol 37
-(se mettre dans le bon dossier avant de lancer la commande ...)
-
-2. Un fichier boardmap.svg est créé dans le dossier d'installation. Ce fichier est lisible avec tout un tas de logiciel dont Google Chrome, Inkscape ...
-
-3. Ouvrir avec Inkscape le fichier .svg
-
-4. Fichier --> Exporter une image PNG . Cliquer ensuite sur "Exporter"
-
-5.Pour une impression : ouvrir l'image avec paint , dans "Mise en page",  sélectionner l'option "100% de la taille normale", puis imprimer les différentes pages
-
-
-### Génération a partir d'excel
-
-1. Ouvrir le fichier excel board.xls
-
-2. Remplir les cellules avec les caractères suivants :
-    * Pour les montagnes : m 
-    * Pour le sol normal : s 
-    * Pour l'eau : e 
-    * Pour les ilots : i
-    * Pour les marécages : a 
-    * Pour les zones non utilisées : u
-    * Pas besoin d'écrire un caractère pour les zones situées à droite ou en bas de la carte
-
-3. Copier coller la colonne "A" de votre feuille excel dans le script generation.tcl (remplacer les lignes contenant les anciennes valeures)
-
-4. Exécuter le script : tclsh generation.tcl  (se mettre dans le bon dossier avant de lancer la commande ...)
-
-6. Un fichier boardmap.svg est créé dans le dossier d'installation. Ce fichier est lisible avec tout un tas de logiciel dont Google Chrome, Inkscape ...
-
-7. Ouvrir avec Inkscape le fichier .svg
-
-8. Fichier --> Exporter une image PNG . Cliquer ensuite sur "Exporter"
-
-9. Pour une impression : ouvrir l'image avec paint , dans "Mise en page",  sélectionner l'option "100% de la taille normale", puis imprimer les différentes pages
-
-
-## Quelques statistiques
+## Quelques statistiques du jeu
 
 Dans la carte de base, il y a :
 
