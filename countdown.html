@@ -62,10 +62,9 @@
                     clearInterval(refreshIntervalId);
                     document.body.style.background = "red";
                     refreshIntervalId = 0
-                    audioStop.play();
                 }
                 
-                if (diff <= 2 && zeroSecondesAlert == 0) {
+                if (diff <= 1 && zeroSecondesAlert == 0) {
                     zeroSecondesAlert = 1;
                     audioStop.play();
                 }
@@ -90,7 +89,7 @@
 
             var audioTrente = new Audio('src/Temple_Bell.mp3');
             var audioStop = new Audio('src/Warning_Siren.mp3');
-            var duration = 10;
+            var duration = 3 * 60;
             var trenteSecondesAlert = 0;
             var zeroSecondesAlert = 0;
             var start = 0;
