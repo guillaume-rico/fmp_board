@@ -22,7 +22,7 @@ Carte d'origine :
 Dans la carte de base, il y a :
 
 Type de terrain | Nombre | Pourcentage
-------------- | -----------
+------------- | ----------- | -----------
 Montagne | 72 | 8.46%
 Sol | 401 | 47.12%
 Eau | 231 | 27.14%
@@ -61,13 +61,10 @@ Eau | 239 | 17.55 | 75 | 5.51 | 106 | 7.78 | 63 | 4.63 | 879 | 64.54
 
 ## Ressource sur le jeu d'origine
 
-Plateau : 
+Règles, plateau, figurine 3D ... :
 
-http://eric.alber.free.fr/xmedia/fmp/plateau_standard.pdf
+http://eric.alber.free.fr/wiki/doku.php/full_metal_planete
 
-### Règles
-
-http://eric.alber.free.fr/xmedia/fmp/regle.pdf
 
 ### Plateau modulaire
 
