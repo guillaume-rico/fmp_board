@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
+        <style type="text/css">
+            html,body
+            {
+                height: 100%;
+            }
+            body
+            {
+               display: table; 
+               margin: 0 auto;
+            }
+
+            .container
+            {  
+                height: 100%;
+                display: table-cell;   
+                vertical-align: middle;
+                font-size: 600px;
+                font-family : Helvetica, Arial, sans-serif;
+            }
+            .bottom
+            {  
+                font-size: 20px;  
+            }
+            .center {
+                margin: auto;
+                width: 60%;
+            }
+            @font-face{
+                font-family : "digital-7.italic";
+                src :'src/digital-7.italic.ttf';
+            }
+        </style>
+        <script>
+
+                var diff,
+                    minutes,
+                    seconds;
+            function timer() {
+                // get the number of seconds that have elapsed since 
+                // startTimer() was called
+                diff = duration - (((Date.now() - start) / 1000) | 0);
+
+                if (diff <= 0) {
+                    diff = 0;
+                }
+                
+                
+                // does the same job as parseInt truncates the float
+                minutes = (diff / 60) | 0;
+                seconds = (diff % 60) | 0;
+
+                minutes = minutes < 10 ? "0" + minutes : minutes;
+                seconds = seconds < 10 ? "0" + seconds : seconds;
+
+                display.textContent = minutes + ":" + seconds; 
+
+                if (diff <= 0 && zeroSecondesAlert == 0) {
+                    zeroSecondesAlert = 1;
+                    clearInterval(refreshIntervalId);
+                    document.body.style.background = "red";
+                    refreshIntervalId = 0
+                    audioStop.play();
+                }
+                
+                // A 30 secondes de la fin 
+                if (diff <= 30 && trenteSecondesAlert == 0) {
+                    trenteSecondesAlert = 1;
+                    document.body.style.background = "orange";
+                    audioTrente.play();
+                }
+            };
+            
+            function reloadTimer() {
+                trenteSecondesAlert = 0;
+                zeroSecondesAlert = 0;
+                document.body.style.background = "#00cc00";
+                timer();
+                if (refreshIntervalId == 0) {
+                    refreshIntervalId = setInterval(timer, 90);
+                }
+            };
+
+            var audioStop = new Audio('http://www.wavsource.com/snds_2016-01-27_4376592650809248/sfx/air_raid.wav');
+            var audioTrente = new Audio('http://www.wavsource.com/snds_2016-01-27_4376592650809248/sfx/sonar_x.wav');
+            var duration = 3 * 60;
+            var trenteSecondesAlert = 0;
+            var zeroSecondesAlert = 0;
+            var start = 0;
+            var pause = 0;
+            var pauseOldDiff = 0;
+            var refreshIntervalId = 0;
+            
+            
+            
+            window.onload = function () {
+                display = document.querySelector('#time');
+                start = Date.now();
+                // we don't want to wait a full second before the timer starts
+                reloadTimer();
+            };
+            
+            document.onkeydown = function(evt) {
+                evt = evt || window.event;
+                //alert(evt.keyCode);
+                //B 66
+                if (evt.keyCode == 66) {
+                    duration = duration + 60;
+                    reloadTimer();
+                }
+                //G 71
+                if (evt.keyCode == 71) {
+                    duration = duration - 60;
+                    reloadTimer();
+                }
+                //N 78
+                if (evt.keyCode == 78) {
+                    duration = 3 * 60;
+                    start = Date.now();
+                    reloadTimer();
+                }
+                //Space 32
+                if (evt.keyCode == 32) {
+                    if (pause == 0) {
+                        pause = 1;
+                        clearInterval(refreshIntervalId);
+                        refreshIntervalId = 0;
+                        // On sauvegarde la diff 
+                        pauseOldDiff = diff;
+                    } else {
+                        pause = 0;
+                        duration = pauseOldDiff;
+                        start = Date.now();
+                        reloadTimer();
+                    }
+                }
+                //if (evt.ctrlKey && evt.keyCode == 90) {
+                //    alert("Ctrl-Z");
+                //}
+            };
+            
+        </script>
+    </head>
+
+    <body style="background:#00cc00;" >
+        <table>
+            <tr><td><div class="container" id="time" >03:00</div></td></tr>
+            <tr><td><p class="center" >Espace : Pause -- N : Joueur suivant -- B : Boulette  -- G: -1 minute</p></td></tr>
+        </table>
+        
+        
+    </body>
+</html>

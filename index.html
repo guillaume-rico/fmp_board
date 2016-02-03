@@ -1,60 +1,60 @@
 <!DOCTYPE html>
 <html>
-  <head>
-		<meta http-equiv="Content-Type" content="text/html;charset=utf-8">
-		<title>FMP Board Generator</title>
-		
-		<script type="text/javascript" src="src/d3.min.js"></script>
-		<script type="text/javascript" src="src/d3.hexbin.js"></script>	
-		<script type="text/javascript" src="src/jquery-2.2.0.min.js"></script>
-		<script type="text/javascript" src="js/generate.js"></script>
-		<script type="text/javascript" src="js/tosvg.js"></script>
-		<script type="text/javascript" src="js/exemple.js"></script>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
+        <title>FMP Board Generator</title>
+        
+        <script type="text/javascript" src="src/d3.min.js"></script>
+        <script type="text/javascript" src="src/d3.hexbin.js"></script>	
+        <script type="text/javascript" src="src/jquery-2.2.0.min.js"></script>
+        <script type="text/javascript" src="js/generate.js"></script>
+        <script type="text/javascript" src="js/tosvg.js"></script>
+        <script type="text/javascript" src="js/exemple.js"></script>
 
-		<style type="text/css">
-			body {
-				margin: 0px; 
-				overflow: hidden; 
-				font-family: "Helvetica Neue", Helvetica; 
-				font-size: 14px;
-			}
+        <style type="text/css">
+            body {
+                margin: 0px; 
+                overflow: hidden; 
+                font-family: "Helvetica Neue", Helvetica; 
+                font-size: 14px;
+            }
 
-			.header {
-				margin-top: 20px;
-				margin-left: 20px;
-				font-size: 36px; 
-				font-weight: 300; 
-				display: block; 
-				z-index: 1; 
-				text-shadow: 0 1px 0 #fff;
-			}
-			.control {
-				margin-top: 5px;
-				margin-left: 20px;
-				display: block; 
-				z-index: 1; 
-				text-shadow: 0 1px 0 #fff;
-			}
-			.hint {
-				width: 1280px; 
-				right: 0px; 
-				color: rgb(153, 153, 153); 
-				font-size: 12px;
-				padding-bottom: 5px;
-			}
+            .header {
+                margin-top: 20px;
+                margin-left: 20px;
+                font-size: 36px; 
+                font-weight: 300; 
+                display: block; 
+                z-index: 1; 
+                text-shadow: 0 1px 0 #fff;
+            }
+            .control {
+                margin-top: 5px;
+                margin-left: 20px;
+                display: block; 
+                z-index: 1; 
+                text-shadow: 0 1px 0 #fff;
+            }
+            .hint {
+                width: 1280px; 
+                right: 0px; 
+                color: rgb(153, 153, 153); 
+                font-size: 12px;
+                padding-bottom: 5px;
+            }
 
-			.hr-style {
-			   border: 0;
-			   height: 2px;
-			   width: 80%;
-			   color: #E8E8E8;
-			   background-color: #E8E8E8;
-			}
-		</style>
+            .hr-style {
+               border: 0;
+               height: 2px;
+               width: 80%;
+               color: #E8E8E8;
+               background-color: #E8E8E8;
+            }
+        </style>
 	</head>
 	<body>
 	    <div class="header">
-			Génération de carte pour Full Métal Planète (<a href="https://github.com/guillaume-rico/fmp_board">GitHub</a>)
+			Génération de carte pour Full Métal Planète (<a href="https://github.com/guillaume-rico/fmp_board">GitHub</a>) <a href="countdown.html">Chrono FMP</a>
 			<div class="hint">Cliquer sur une case pour changer la nature du sol.</div>
 		</div>
         <div class="control">

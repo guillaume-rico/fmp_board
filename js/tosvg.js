@@ -13,7 +13,7 @@ function download(preview) {
     document.body.removeChild(element);
 }
 
-var side = 20;
+var side = 12;
 var t = Math.floor(side / 2.0);			    
 var r = Math.floor(side * 0.8660254037844);	
 var h = 2 * r;
@@ -60,22 +60,19 @@ function drawHex(startX, startY, style, expand, shiftX, shiftY) {
 
     var retstr = "";
     var styleModif = "";
-	if (style == "none") {
-		retstr = retstr.concat("        <polygon points=\"" + x1 + "," +y1 + " " + x2 + "," +y2 + " " + x3 + "," +y3 + " " + x4 + "," + y4 + " " + x5 + "," +y5 + " " + x6 + "," +y6 +"\" />");
-	}
 	if (style == "bord") {
         styleModif = "style=\"stroke:none; fill: #ffffff;filter:url(#filterMontagne)\""
-		retstr = retstr.concat("        <polygon points=\"" + x1 + "," +y1 + " " + x2 + "," +y2 + " " + x3 + "," +y3 + " " + x4 + "," + y4 + " " + x5 + "," +y5 + " " + x6 + "," +y6 +"\" style=\"stroke:none; fill: #ffffff;filter:url(#filterMontagne)\" />");
 	}
 	if (style == "stroke") {
-        styleModif = "style=\"stroke:rgb(0,0,0);stroke-width:0.25;fill: none\""
-		retstr = retstr.concat("        <polygon points=\"" + x1 + "," +y1 + " " + x2 + "," +y2 + " " + x3 + "," +y3 + " " + x4 + ","  +y4 + " " + x5 + "," +y5 + " " + x6 + "," +y6 +"\" style=\"stroke:rgb(0,0,0);stroke-width:0.25;fill: none\" />");
+        styleModif = "style=\"stroke:rgb(0,0,0);stroke-width:0.1;fill: none\""
 	}
     if (style == "preview") {
         styleModif = "style=\"stroke:none; fill: #ffffff\""
     }
     retstr = retstr.concat("        <polygon points=\"" + x1 + "," +y1 + " " + x2 + "," +y2 + " " + x3 + "," +y3 + " " + x4 + ","  +y4 + " " + x5 + "," +y5 + " " + x6 + "," +y6 +"\" " + styleModif + " />");
 
+    // Cette partie permet de générer le masque des ombres pour les montagnes
+    
     x1 =  x1 + shiftX;
     y1 =  y1 + shiftY;
     x2 =  x2 + shiftX;
@@ -89,15 +86,14 @@ function drawHex(startX, startY, style, expand, shiftX, shiftY) {
     x6 =  x6 + shiftX;
     y6 =  y6 + shiftY;
 	
-	if (style == "none") {
-		drawHexStr = drawHexStr.concat("        <polygon points=\"" + x1 + "," +y1 + " " + x2 + "," +y2 + " " + x3 + "," +y3 + " " + x4 + "," + y4 + " " + x5 + "," +y5 + " " + x6 + "," +y6 +"\" />\n");
-	}
+    var styleModif = "";
 	if (style == "bord") {
-		drawHexStr = drawHexStr.concat("        <polygon points=\"" + x1 + "," +y1 + " " + x2 + "," +y2 + " " + x3 + "," +y3 + " " + x4 + "," + y4 + " " + x5 + "," +y5 + " " + x6 + "," +y6 +"\" style=\"stroke:none; fill: #ffffff;filter:url(#filterMontagne)\" />\n");
+        styleModif = "style=\"stroke:none; fill: #ffffff;filter:url(#filterMontagne)\""
 	}
 	if (style == "stroke") {
-		drawHexStr = drawHexStr.concat("        <polygon points=\"" + x1 + "," +y1 + " " + x2 + "," +y2 + " " + x3 + "," +y3 + " " + x4 + "," + y4 + " " + x5 + "," +y5 + " " + x6 + "," +y6 +"\" style=\"stroke:rgb(0,0,0);stroke-width:1;fill: none\" />\n");
+        styleModif = "style=\"stroke:rgb(0,0,0);stroke-width:0.1;fill: none\""
 	}
+    drawHexStr = drawHexStr.concat("        <polygon points=\"" + x1 + "," +y1 + " " + x2 + "," +y2 + " " + x3 + "," +y3 + " " + x4 + ","  +y4 + " " + x5 + "," +y5 + " " + x6 + "," +y6 +"\" " + styleModif + " />");
 	
 	return retstr;
 }
@@ -257,22 +253,22 @@ function tosvg (preview) {
            style="color-interpolation-filters:sRGB;" \n\
            id="filterMontagne"> \n\
           <feTurbulence \n\
-             baseFrequency="0.025999999999999981" \n\
+             baseFrequency="0.026" \n\
              numOctaves="3" \n\
              type="fractalNoise" \n\
              result="result91" \n\
              id="feTurbulence5464" \n\
              seed="1" \n\
-             stdDeviation="5.5" /> \n\
+             stdDeviation="2" /> \n\
           <feDisplacementMap \n\
-             scale="28" \n\
+             scale="6" \n\
              result="result5" \n\
              xChannelSelector="R" \n\
              in="SourceGraphic" \n\
              in2="result91" \n\
              id="feDisplacementMap5466" /> \n\
           <feGaussianBlur \n\
-             stdDeviation="5.4679694323144101" \n\
+             stdDeviation="3" \n\
              id="feGaussianBlur9557" \n\
              result="result92" /> \n\
           <feComposite \n\
@@ -285,7 +281,7 @@ function tosvg (preview) {
            style="color-interpolation-filters:sRGB;" \n\
            id="filterOmbre"> \n\
           <feFlood \n\
-             flood-opacity="0.498039" \n\
+             flood-opacity="0.5" \n\
              flood-color="rgb(0,0,0)" \n\
              result="flood" \n\
              id="feFlood10550" /> \n\
@@ -297,12 +293,12 @@ function tosvg (preview) {
              id="feComposite10552" /> \n\
           <feGaussianBlur \n\
              in="composite1" \n\
-             stdDeviation="6.8" \n\
+             stdDeviation="3.8" \n\
              result="blur" \n\
              id="feGaussianBlur10554" /> \n\
           <feOffset \n\
-             dx="-4.6" \n\
-             dy="2.6" \n\
+             dx="-2.6" \n\
+             dy="1.3" \n\
              result="offset" \n\
              id="feOffset10556" /> \n\
           <feComposite \n\
@@ -331,7 +327,7 @@ function tosvg (preview) {
         for (var j = 0 ; j < nbRow ; j++) {
             localGrndStyle = shortintoval(groundstyle[ i + nbCol * j]);
             if (localGrndStyle == "s"  || localGrndStyle == "a") {
-                retstr = retstr.concat(drawHex(shiftX * i,h * j + (i % 2) * r,"bord") + "\n");
+                retstr = retstr.concat(drawHex(shiftX * i,h * j + (i % 2) * r,"bord",1.2) + "\n");
             }
             if (localGrndStyle == "i") {
                 retstr = retstr.concat(drawIlot(shiftX * i,h * j + (i % 2) * r,"bord") + "\n");
@@ -346,7 +342,7 @@ function tosvg (preview) {
             localGrndStyle = shortintoval(groundstyle[ i + nbCol * j]);
             if (localGrndStyle == "m") {
                 if (!preview) {
-                    retstr = retstr.concat(drawHex(shiftX * i,h * j + (i % 2) * r,"bord",1.2,-15,15) + "\n");
+                    retstr = retstr.concat(drawHex(shiftX * i,h * j + (i % 2) * r,"bord",1.1,-1 * side / 3,side / 3) + "\n");
                 } else {
                     // Si on est en preview, les hexagones doivent faire la taille de la carte
                     retstr = retstr.concat(drawHex(shiftX * i,h * j + (i % 2) * r,"preview") + "\n");
@@ -367,12 +363,15 @@ function tosvg (preview) {
             }
         }
     }
- retstr = retstr.concat('         </mask> \n');
-  retstr = retstr.concat('    </defs> \n');
+    retstr = retstr.concat('         </mask> \n');
+    retstr = retstr.concat('    </defs> \n');
+  
+    var imageNameForGround = "sand.JPG";
+    var imageNameForMountain = "charbon.png";
   
     // On ajout l'image du sol sur l'ensemble de la carte
     if (!preview) {
-        retstr = retstr.concat('     <image xlink:href=\"imageNameForGround\" x=\"0\" y=\"0\" height=\"' + outputHeigth + '\" width=\"' + outputWidth + '\" preserveAspectRatio=\"none\"  /> \n');
+        retstr = retstr.concat('     <image xlink:href=\"' + imageNameForGround + '\" x=\"0\" y=\"0\" height=\"' + outputHeigth + '\" width=\"' + outputWidth + '\" preserveAspectRatio=\"none\"  /> \n');
     } else {
         retstr = retstr.concat('     <rect x=\"0\" y=\"0\" width=\"' + outputWidth + '\" height=\"' + outputHeigth + '\" style=\"fill:#CC9959\"  /> \n');
     }
@@ -382,7 +381,7 @@ function tosvg (preview) {
     
     // On fait dépasser de la terre sur l'eau
     if (!preview) {
-        retstr = retstr.concat('     <image xlink:href=\"imageNameForGround\" x=\"0\" y=\"0\" height=\"' + outputHeigth + '\" width=\"' + outputWidth + '\" preserveAspectRatio=\"none\" mask=\"url(#mask_sand)\"  /> \n');
+        retstr = retstr.concat('     <image xlink:href=\"' + imageNameForGround + '\" x=\"0\" y=\"0\" height=\"' + outputHeigth + '\" width=\"' + outputWidth + '\" preserveAspectRatio=\"none\" mask=\"url(#mask_sand)\"  /> \n');
     } else {
         retstr = retstr.concat('     <rect x=\"0\" y=\"0\" width=\"' + outputWidth + '\" height=\"' + outputHeigth + '\" style=\"fill:#CC9959\" mask=\"url(#mask_sand)\"  />" \n');
     }
@@ -393,7 +392,7 @@ function tosvg (preview) {
     // On ajoute des montagnes
     if (!preview) {
         retstr = retstr.concat('     <rect x=\"0\" y=\"0\" width=\"' + outputWidth + '\" height=\"' + outputHeigth + '\" mask=\"url(#mask_charbon_ombre)\"  style=\"fill:#000000\" /> \n');
-        retstr = retstr.concat('     <image xlink:href=\"${imageNameForMountain}\" x=\"0\" y=\"0\" height=\"' + outputHeigth + '\" width=\"' + outputWidth + '\" preserveAspectRatio=\"none\" mask=\"url(#mask_charbon)\" /> \n');
+        retstr = retstr.concat('     <image xlink:href=\"' + imageNameForMountain + '\" x=\"0\" y=\"0\" height=\"' + outputHeigth + '\" width=\"' + outputWidth + '\" preserveAspectRatio=\"none\" mask=\"url(#mask_charbon)\" /> \n');
     } else {
         retstr = retstr.concat('     <rect x=\"0\" y=\"0\" width=\"' + outputWidth + '\" height=\"' + outputHeigth + '\" mask=\"url(#mask_charbon)\"  style=\"fill:#000000\" /> \n');
     }
@@ -408,6 +407,7 @@ function tosvg (preview) {
         }
     }
      
+    // Contour de la carte
     retstr = retstr.concat('     <rect x=\"0\" y=\"0\" width=\"' + outputWidth + '\" height=\"' + outputHeigth + '\" style=\"fill:none;stroke:#000000;stroke-opacity:1\" />\n');
      
     retstr = retstr.concat('</svg>\n');

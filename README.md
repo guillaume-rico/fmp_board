@@ -59,6 +59,12 @@ Eau | 239 | 17.55 | 75 | 5.51 | 106 | 7.78 | 63 | 4.63 | 879 | 64.54
 
 ## Liens
 
+## Ressource sur le jeu d'origine
+
+Plateau : 
+
+http://eric.alber.free.fr/xmedia/fmp/plateau_standard.pdf
+
 ### Règles
 
 http://eric.alber.free.fr/xmedia/fmp/regle.pdf
