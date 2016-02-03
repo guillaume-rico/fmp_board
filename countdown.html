@@ -58,14 +58,18 @@
 
                 display.textContent = minutes + ":" + seconds; 
 
-                if (diff <= 0 && zeroSecondesAlert == 0) {
-                    zeroSecondesAlert = 1;
+                if (diff <= 0) {
                     clearInterval(refreshIntervalId);
                     document.body.style.background = "red";
                     refreshIntervalId = 0
                     audioStop.play();
                 }
                 
+                if (diff <= 2 && zeroSecondesAlert == 0) {
+                    zeroSecondesAlert = 1;
+                    audioStop.play();
+                }
+
                 // A 30 secondes de la fin 
                 if (diff <= 30 && trenteSecondesAlert == 0) {
                     trenteSecondesAlert = 1;
@@ -84,9 +88,9 @@
                 }
             };
 
-            var audioTrente = new Audio('http://www.wavsource.com/snds_2016-01-27_4376592650809248/sfx/sonar_x.wav');
-            var audioStop = new Audio('http://www.wavsource.com/snds_2016-01-27_4376592650809248/sfx/air_raid.wav');
-            var duration = 3 * 60;
+            var audioTrente = new Audio('src/Temple_Bell.mp3');
+            var audioStop = new Audio('src/Warning_Siren.mp3');
+            var duration = 10;
             var trenteSecondesAlert = 0;
             var zeroSecondesAlert = 0;
             var start = 0;

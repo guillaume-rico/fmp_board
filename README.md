@@ -75,6 +75,9 @@ La carte des extensions est disponible à l'adresse suivante : http://eric.alber
 
 Dans cette extension, il y a 3 plateaux en double (dans le PDF précédent, les plateaux 1 (identique au 9), 4 (identique au 8), 14 (identique au 16))
 
+## Son
+
+http://soundbible.com
 
 ## Autres idées
 
