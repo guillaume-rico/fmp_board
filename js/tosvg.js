@@ -1,8 +1,11 @@
 
-function download(preview) {
 
+function download() {
+
+
+    var svgToSave = tosvg();
     var element = document.createElement('a');
-    element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(tosvg(preview)));
+    element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(svgToSave));
     element.setAttribute('download', 'fmbboard.svg');
 
     element.style.display = 'none';
@@ -11,6 +14,9 @@ function download(preview) {
     element.click();
 
     document.body.removeChild(element);
+    
+
+    
 }
 
 var side = 12;
@@ -232,19 +238,33 @@ function drawIlot (startX, startY, style) {
     return retstr;
 }
 
-function tosvg (preview) {
+function tosvg () {
     
     // On Calcul la taille de l'image compete
     var outputWidth  = (t + side) * nbCol + t;
     var outputHeigth = h * nbRow + r;
-
+    var preview = false;
     var retstr = '\
 <?xml version="1.0" standalone="no"?> \n\
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" \n\
     "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd"> \n';
+
     retstr = retstr.concat('<svg width=\"' + outputWidth + 'mm\" height=\"' + outputHeigth + 'mm\" viewBox=\"0 0 ' + outputWidth + ' ' + outputHeigth + '\" \n');
-    retstr = retstr.concat('    version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink= "http://www.w3.org/1999/xlink"> \n\
-    <defs> \n\
+    retstr = retstr.concat('    version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink= "http://www.w3.org/1999/xlink">\n');
+    
+    // On ajoute un header avec les infos sur les emplacements
+    retstr = retstr.concat('<-- \n');
+    retstr = retstr.concat('[HEX]\n');
+    for (var j = 0 ; j < nbRow ; j++) {
+        for (var i = 0; i < nbCol; i++) {
+            localGrndStyle = shortintoval(groundstyle[ i + nbCol * j]);
+            retstr = retstr.concat(localGrndStyle + ' ');
+        }
+        retstr = retstr.concat('\n');
+    }
+    retstr = retstr.concat('--> \n');
+    
+    retstr = retstr.concat('    <defs> \n\
         <filter \n\
            height="1.4" \n\
            y="-0.2" \n\

@@ -50,10 +50,55 @@ originalsurface[i++] = ["s","s","m","a","a","a","a","s","s","s","s","s","a","s",
 originalsurface[i++] = ["s","s","s","s","s","s","s","s","s","s","s","a","a","e","s","s","s","m","m","m","s","s","s","s","s","s","s","a","e","s","s","s","s","s","s","s","s"];
 originalsurface[i++] = ["s","s","s","s","s","s","s","s","s","s","s","a","s","s","e","m","m","m","m","m","s","m","s","s","s","a","a","s","a","s","s","s","s","s","s","s","s"];
 
+function loadBoard (evt) {
+    
+    var input = evt.target;
+    var arrayOfLines;
+    var reader = new FileReader();
+    reader.onload = function(){
+        var text = reader.result;
+      
+        // On parse le fichier
+        start = reader.result.indexOf("[HEX]") + 6; 
+        end = reader.result.indexOf("-->") - 1;
+        listOfChars  = reader.result.substring(start, end);
+        arrayOfLines = listOfChars.replace(/ /g, "").match(/[^\r\n]+/g);
+        initboard(arrayOfLines);
+        //console.log(reader.result.substring(start, 200));
+    };
+    reader.readAsText(input.files[0]);
+    
+    
+    
+    
+    /*
+    var files = evt.target.files;
+    var file = files[0];
+
+    if (!file) {
+        return;
+    }
+    
+    
+    
+    var readerFile = new FileReader();
+    readerFile.onload = function(e) {
+        var contents = e.target.result;
+        alert( "Got the file.n" 
+            +"name: " + file.name + "n"
+            +"type: " + file.type + "n"
+            +"size: " + file.size + " bytesn"
+        ); 
+    }
+    */
+
+
+}
+
 function initboard (map) {
 
-    var width = originalsurface[0].length;
-    var height = originalsurface.length;
+    var width = map[0].length;
+    var height = map.length;
     var count = 0;
     
     // On met a jour les variables affichées à l'écran
@@ -63,8 +108,8 @@ function initboard (map) {
     
     for (var y = 0; y < height ; y++) {
         for (var x = 0; x < width ; x++) {
-            color[count] = originalsurface[y][x];
-            groundstyle[count] = valtoshortint(originalsurface[y][x]);
+            color[count] = map[y][x];
+            groundstyle[count] = valtoshortint(map[y][x]);
             positionXY[count] = x + "-" + y + "-" + count;
             count = count + 1;
             

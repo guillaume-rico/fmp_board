@@ -46,7 +46,7 @@ Distance bord de carte | Nombre total | Sol | Sol % | Montagne | Montagne % | Il
 10 | 36 | 13 | 36.11% | 3 | 8.33% | 0 | 0.00% | 4 | 11.11% | 16 | 44.44%
 11 | 15 | 6 | 40.00% | 2 | 13.33% | 0 | 0.00% | 2 | 13.33% | 5 | 33.33%
 
-SAns tenir compte de la rangée d'héxagone du bord de la carte, on peut extraire des statistiques sur quels sont les probabilité d'avoir chaque type de terrain en fonction du type du terrain de l'héxagone :
+Sans tenir compte de la rangée d'héxagone du bord de la carte, on peut extraire des statistiques sur quels sont les probabilité d'avoir chaque type de terrain en fonction du type du terrain de l'héxagone :
 
 Type de surface | Sol | Sol % | Montagne | Montagne % | Ilot | Ilot % | Marécage | Marécage % | Eau | Eau %
 --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | ---

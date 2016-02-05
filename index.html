@@ -10,6 +10,7 @@
         <script type="text/javascript" src="js/generate.js"></script>
         <script type="text/javascript" src="js/tosvg.js"></script>
         <script type="text/javascript" src="js/exemple.js"></script>
+        <link rel="stylesheet" href="src/font-awesome/css/font-awesome.min.css">
 
         <style type="text/css">
             body {
@@ -54,32 +55,42 @@
 	</head>
 	<body>
 	    <div class="header">
-			Génération de carte pour Full Métal Planète (<a href="https://github.com/guillaume-rico/fmp_board">GitHub</a>) <a href="countdown.html">Chrono FMP</a>
-			<div class="hint">Cliquer sur une case pour changer la nature du sol.</div>
-		</div>
-        <div class="control">
-            <div class="size">
-                <p>
-                    largeur : <input id="largeur" type="text" size="10" value="37">
-                    hauteur : <input id="hauteur" type="text" size="10" value="23">
-                    <input id="hexagone" type="checkbox" name="choix1" value="1" > Hexagone ?
-                    <input id="valider" type="button" size="10" value="Recharger" onclick="computeboard(document.getElementById('hexagone').checked);">
-                    <input id="initialise_origine" type="button" size="10" value="Carte originale" onclick="initboard('origin');">
-                </p>
-            </div>
-            <div class="download">
-                <p><input id="preview" type="checkbox" name="choix1" value="1" checked > Preview
-                <input id="valider" type="button" size="10" value="Telecharger" onclick="download(document.getElementById('preview').checked);"  >
-                Penser à télécharger les fichiers suivants dans le même dossier <a href="https://github.com/guillaume-rico/fmp_board/raw/master/charbon.png" download="charbon.png">charbon.png</a> & <a href="https://github.com/guillaume-rico/fmp_board/raw/master/sand.JPG" download="sand.JPG">sand.JPG</a> </p>
-            </div>
+			Génération de carte pour Full Métal Planète 
+			<div class="hint">Cliquer sur une case pour changer la nature du sol. <a href="https://github.com/guillaume-rico/fmp_board">GitHub du projet</a> . <a href="countdown.html">Compte à rebour</a> </div>
+			<div class="hint">Penser à télécharger les fichiers suivants dans le même dossier <a href="https://github.com/guillaume-rico/fmp_board/raw/master/charbon.png" download="charbon.png">charbon.png</a> & <a href="https://github.com/guillaume-rico/fmp_board/raw/master/sand.JPG" download="sand.JPG">sand.JPG</a>. Une fois l'image téléchargée, l'ouvrir avec Inkscape.</div>            
         </div>
 
+		<div id="chart" style="float:left;"></div>
         
-		<div id="chart"></div>
+        <div id="c2" style="float:left;">
+            <p>largeur : <input id="largeur" type="text" maxlength="2" size="2" value="37"></p>
+            <p>hauteur : <input id="hauteur" type="text" maxlength="2" size="2" value="23"></p>
+            <p><input id="hexagone" type="checkbox" name="choix1" value="1" > Hexagone ?</p>
+            <button type="submit" class="btn btn-success" onclick="computeboard(document.getElementById('hexagone').checked);"  title="Re-générer aléatoirement" >
+                <i class="fa fa-refresh fa-2x"></i>
+            </button>
+            <br />
+            <button type="submit" class="btn btn-success" onclick="download();"  title="Télécharger l'image" >
+                <i class="fa fa-download fa-2x"></i>
+            </button>
+            <br />
+            <button type="submit" class="btn btn-success" onclick="initboard(originalsurface);"  title="Charger l'image d'origine" >
+                <i class="fa fa-exchange fa-2x"></i>
+            </button>
+            <br />
+            <input type="file" id="fileImport" style="display:none;" />
+            <button type="submit" class="btn btn-success" onclick="document.getElementById('fileImport').click();"  title="Importer une carte" >
+                <i class="fa fa-upload fa-2x"></i>
+            </button>
+        </div>
 		
-        
+<canvas id="canvas" width="960" height="500" style="display:none"></canvas>
+
 		<script type="text/javascript">
         
+           // When selecting a map to load
+           document.getElementById('fileImport').addEventListener('change', loadBoard, false);
+
             // A faire :
             // * Sauvegarde carte 
             // * Sélection coef
@@ -149,7 +160,7 @@
 
                 //The next lines should be run, but this seems to go wrong on the first load in bl.ocks.org
                 var width = $(window).width() - margin.left - margin.right - 40;
-                var height = $(window).height() - margin.top - margin.bottom - 240;
+                var height = $(window).height() - margin.top - margin.bottom - 140;
                 //So I set it fixed to
                 //var width = 900;
                 //var height = 900;
