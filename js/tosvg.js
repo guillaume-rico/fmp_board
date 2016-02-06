@@ -1,22 +1,49 @@
 
 
-function download() {
+function downloadAsPng() {
+    var html = tosvg("png");
 
+    //console.log(html);
+    
+    var imgsrc = 'data:image/svg+xml;base64,'+ btoa(html);
+    var img = '<img src="'+imgsrc+'">'; 
 
-    var svgToSave = tosvg();
+    var canvas = document.getElementById('canvas'),
+      context = canvas.getContext("2d");
+      
+    // On met a jour la taille de canvas
+    var outputWidth  = (t + side) * nbCol + t;
+    var outputHeigth = h * nbRow + r;
+    canvas.width = outputWidth * 4;
+    canvas.height = outputHeigth * 4;
+
+    var image = new Image;
+    image.src = imgsrc;
+    image.onload = function() {
+        context.drawImage(image, 0, 0);
+
+        var canvasdata = canvas.toDataURL("image/png");
+
+        var a = document.createElement("a");
+        a.download = "fmbboard.png";
+        a.href = canvasdata;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+    };
+}
+
+function downloadAsSvg() {
+
+    var svgToSave = tosvg("svg");
     var element = document.createElement('a');
     element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(svgToSave));
     element.setAttribute('download', 'fmbboard.svg');
-
     element.style.display = 'none';
     document.body.appendChild(element);
-
     element.click();
-
     document.body.removeChild(element);
-    
 
-    
 }
 
 var side = 12;
@@ -24,8 +51,6 @@ var t = Math.floor(side / 2.0);
 var r = Math.floor(side * 0.8660254037844);	
 var h = 2 * r;
 var shiftX = t + side;
-
-
 
 
 var drawHexStr = "";
@@ -238,21 +263,27 @@ function drawIlot (startX, startY, style) {
     return retstr;
 }
 
-function tosvg () {
+function tosvg (mode) {
+    
+    // Mode peut être :
+    // - preview
+    // - svg
+    // - png
     
     // On Calcul la taille de l'image compete
     var outputWidth  = (t + side) * nbCol + t;
     var outputHeigth = h * nbRow + r;
-    var preview = false;
     var retstr = '\
 <?xml version="1.0" standalone="no"?> \n\
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" \n\
     "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd"> \n';
 
+    
     retstr = retstr.concat('<svg width=\"' + outputWidth + 'mm\" height=\"' + outputHeigth + 'mm\" viewBox=\"0 0 ' + outputWidth + ' ' + outputHeigth + '\" \n');
     retstr = retstr.concat('    version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink= "http://www.w3.org/1999/xlink">\n');
     
     // On ajoute un header avec les infos sur les emplacements
+    if (mode == "svg") {
     retstr = retstr.concat('<-- \n');
     retstr = retstr.concat('[HEX]\n');
     for (var j = 0 ; j < nbRow ; j++) {
@@ -263,6 +294,7 @@ function tosvg () {
         retstr = retstr.concat('\n');
     }
     retstr = retstr.concat('--> \n');
+    }
     
     retstr = retstr.concat('    <defs> \n\
         <filter \n\
@@ -361,7 +393,7 @@ function tosvg () {
         for (var j = 0 ; j < nbRow ; j++) {
             localGrndStyle = shortintoval(groundstyle[ i + nbCol * j]);
             if (localGrndStyle == "m") {
-                if (!preview) {
+                if (mode == "svg") {
                     retstr = retstr.concat(drawHex(shiftX * i,h * j + (i % 2) * r,"bord",1.1,-1 * side / 3,side / 3) + "\n");
                 } else {
                     // Si on est en preview, les hexagones doivent faire la taille de la carte
@@ -385,12 +417,21 @@ function tosvg () {
     }
     retstr = retstr.concat('         </mask> \n');
     retstr = retstr.concat('    </defs> \n');
-  
+
     var imageNameForGround = "sand.JPG";
     var imageNameForMountain = "charbon.png";
+    if (mode == "png") {
+        if (nbCol == nbRow) {
+            var imageNameForGround = "img/sand_23_23.jpg";
+            var imageNameForMountain = "img/charbon_23_23.jpg";
+        } else {
+            var imageNameForGround = "img/sand_37_23.jpg";
+            var imageNameForMountain = "img/charbon_37_23.jpg";
+        }
+    }
   
     // On ajout l'image du sol sur l'ensemble de la carte
-    if (!preview) {
+    if (mode == "svg" || mode == "png" ) {
         retstr = retstr.concat('     <image xlink:href=\"' + imageNameForGround + '\" x=\"0\" y=\"0\" height=\"' + outputHeigth + '\" width=\"' + outputWidth + '\" preserveAspectRatio=\"none\"  /> \n');
     } else {
         retstr = retstr.concat('     <rect x=\"0\" y=\"0\" width=\"' + outputWidth + '\" height=\"' + outputHeigth + '\" style=\"fill:#CC9959\"  /> \n');
@@ -400,7 +441,7 @@ function tosvg () {
     retstr = retstr.concat('     <rect x=\"0\" y=\"0\" width=\"' + outputWidth + '\" height=\"' + outputHeigth + '\" style=\"fill:#5f788c\" clip-path=\"url(#clip_water)\" /> \n');
     
     // On fait dépasser de la terre sur l'eau
-    if (!preview) {
+    if (mode == "svg" || mode == "png" ) {
         retstr = retstr.concat('     <image xlink:href=\"' + imageNameForGround + '\" x=\"0\" y=\"0\" height=\"' + outputHeigth + '\" width=\"' + outputWidth + '\" preserveAspectRatio=\"none\" mask=\"url(#mask_sand)\"  /> \n');
     } else {
         retstr = retstr.concat('     <rect x=\"0\" y=\"0\" width=\"' + outputWidth + '\" height=\"' + outputHeigth + '\" style=\"fill:#CC9959\" mask=\"url(#mask_sand)\"  />" \n');
@@ -410,13 +451,13 @@ function tosvg () {
     retstr = retstr.concat('     <rect x=\"0\" y=\"0\" width=\"' + outputWidth + '\" height=\"' + outputHeigth + '\" style=\"fill:#5f788c\" mask=\"url(#mask_marecage)\" /> \n');
     
     // On ajoute des montagnes
-    if (!preview) {
+    if (mode == "svg") {
         retstr = retstr.concat('     <rect x=\"0\" y=\"0\" width=\"' + outputWidth + '\" height=\"' + outputHeigth + '\" mask=\"url(#mask_charbon_ombre)\"  style=\"fill:#000000\" /> \n');
         retstr = retstr.concat('     <image xlink:href=\"' + imageNameForMountain + '\" x=\"0\" y=\"0\" height=\"' + outputHeigth + '\" width=\"' + outputWidth + '\" preserveAspectRatio=\"none\" mask=\"url(#mask_charbon)\" /> \n');
     } else {
         retstr = retstr.concat('     <rect x=\"0\" y=\"0\" width=\"' + outputWidth + '\" height=\"' + outputHeigth + '\" mask=\"url(#mask_charbon)\"  style=\"fill:#000000\" /> \n');
     }
-     
+
     // On dessine les hexagones
     for (var i = 0; i < nbCol; i++) {
         for (var j = 0 ; j < nbRow ; j++) {
@@ -426,7 +467,7 @@ function tosvg () {
             }
         }
     }
-     
+
     // Contour de la carte
     retstr = retstr.concat('     <rect x=\"0\" y=\"0\" width=\"' + outputWidth + '\" height=\"' + outputHeigth + '\" style=\"fill:none;stroke:#000000;stroke-opacity:1\" />\n');
      
