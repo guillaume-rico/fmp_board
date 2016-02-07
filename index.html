@@ -53,7 +53,7 @@
             }
         </style>
 	</head>
-	<body>
+	<body onload="ressourceloading();">
 	    <div class="header">
 			Génération de carte pour Full Métal Planète 
 			<div class="hint">Cliquer sur une case pour changer la nature du sol. <a href="https://github.com/guillaume-rico/fmp_board">GitHub du projet</a> . <a href="countdown.html">Compte à rebour</a> </div>
@@ -70,7 +70,7 @@
                 <i class="fa fa-refresh fa-2x"></i>
             </button>
             <br />
-            <button type="submit" class="btn btn-success" onclick="downloadAsPng();"  title="Télécharger l'image" >
+            <button type="submit" class="btn btn-success" onclick="downloadAsPng();"  title="Télécharger l'image en basse qualité" >
                 <i class="fa fa-download fa-2x"></i>
                 <i class="fa fa-file-image-o fa-2x"></i>
             </button>
@@ -349,12 +349,16 @@
                     .on("mouseout", mout)
                     .on("click", mclick)
                     ;
-
-                
             }
 
             computeboard(false);
             
+            var charbonB64 = "";
+            var sandB64 = "";
+            function ressourceloading () {
+                convertImgToDataURLviaCanvas("img/charbon_lc.jpg",function(base64Img){charbonB64 = base64Img;})
+                convertImgToDataURLviaCanvas("img/sand_lc.jpg",function(base64Img){sandB64 = base64Img;})
+            }
             
 
             

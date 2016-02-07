@@ -263,6 +263,25 @@ function drawIlot (startX, startY, style) {
     return retstr;
 }
 
+function convertImgToDataURLviaCanvas(url, callback, outputFormat){
+    var img = new Image();
+    img.crossOrigin = 'Anonymous';
+    img.onload = function(){
+        var canvas = document.createElement('CANVAS');
+        var ctx = canvas.getContext('2d');
+        var dataURL;
+        canvas.height = this.height;
+        canvas.width = this.width;
+        ctx.drawImage(this, 0, 0);
+        dataURL = canvas.toDataURL(outputFormat);
+        callback(dataURL);
+        canvas = null; 
+    };
+    img.src = url;
+}
+
+
+
 function tosvg (mode) {
     
     // Mode peut être :
@@ -393,7 +412,7 @@ function tosvg (mode) {
         for (var j = 0 ; j < nbRow ; j++) {
             localGrndStyle = shortintoval(groundstyle[ i + nbCol * j]);
             if (localGrndStyle == "m") {
-                if (mode == "svg") {
+                if (mode == "svg" || mode == "png") {
                     retstr = retstr.concat(drawHex(shiftX * i,h * j + (i % 2) * r,"bord",1.1,-1 * side / 3,side / 3) + "\n");
                 } else {
                     // Si on est en preview, les hexagones doivent faire la taille de la carte
@@ -421,13 +440,8 @@ function tosvg (mode) {
     var imageNameForGround = "sand.JPG";
     var imageNameForMountain = "charbon.png";
     if (mode == "png") {
-        if (nbCol == nbRow) {
-            var imageNameForGround = "img/sand_23_23.jpg";
-            var imageNameForMountain = "img/charbon_23_23.jpg";
-        } else {
-            var imageNameForGround = "img/sand_37_23.jpg";
-            var imageNameForMountain = "img/charbon_37_23.jpg";
-        }
+        var imageNameForMountain = charbonB64;
+        var imageNameForGround = sandB64;
     }
   
     // On ajout l'image du sol sur l'ensemble de la carte
@@ -451,7 +465,7 @@ function tosvg (mode) {
     retstr = retstr.concat('     <rect x=\"0\" y=\"0\" width=\"' + outputWidth + '\" height=\"' + outputHeigth + '\" style=\"fill:#5f788c\" mask=\"url(#mask_marecage)\" /> \n');
     
     // On ajoute des montagnes
-    if (mode == "svg") {
+    if (mode == "svg" || mode == "png") {
         retstr = retstr.concat('     <rect x=\"0\" y=\"0\" width=\"' + outputWidth + '\" height=\"' + outputHeigth + '\" mask=\"url(#mask_charbon_ombre)\"  style=\"fill:#000000\" /> \n');
         retstr = retstr.concat('     <image xlink:href=\"' + imageNameForMountain + '\" x=\"0\" y=\"0\" height=\"' + outputHeigth + '\" width=\"' + outputWidth + '\" preserveAspectRatio=\"none\" mask=\"url(#mask_charbon)\" /> \n');
     } else {
