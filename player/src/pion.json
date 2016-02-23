@@ -1,0 +1,30 @@
+[
+ {"type":"char",
+  "i":3,
+  "j":5,
+  "x":0,
+  "y":0,
+  "team": "red"
+ },
+ {"type":"char",
+  "i":7,
+  "j":10,
+  "x":0,
+  "y":0,
+  "team": "red"
+ },
+ {"type":"gros_tas",
+  "i":2,
+  "j":2,
+  "x":0,
+  "y":0,
+  "team": "red"
+ },
+ {"type":"navette",
+  "i":10,
+  "j":10,
+  "x":0,
+  "y":0,
+  "team": "red"
+ }
+]
