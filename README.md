@@ -19,6 +19,7 @@ Carte d'origine :
 
 ## Quelques statistiques du jeu
 
+# Statistiques des types d'hexagones 
 Dans la carte de base, il y a :
 
 Type de terrain | Nombre | Pourcentage
@@ -56,6 +57,24 @@ Ilot | 54 | 20.00 | 13 | 4.81 | 86 | 31.85 | 11 | 4.07 | 106 | 39.26
 Marécage | 209 | 38.70 | 58 | 10.74 | 11 | 2.04 | 198 | 36.67 | 64 | 11.85
 Eau | 239 | 17.55 | 75 | 5.51 | 106 | 7.78 | 63 | 4.63 | 879 | 64.54
 
+# Statistiques des minerais
+
+Position du premier minerai Vs nombre de minerai total
+X | Y | Nombre de minerais | Nombre de minerai avec la variant max
+--- | --- | --- | ---
+0 | 0 | 83 | 85
+0 | 1 | 71 | 81
+0 | 2 | 73 | 81
+1 | 0 | 68 | 80
+1 | 1 | 67 | 81
+1 | 2 | 64 | 75
+2 | 0 | 69 | 79
+2 | 1 | 63 | 76
+2 | 2 | 62 | 74
+
+Soit une moyenne de 68.88 minerais.
+
+En utilisant la variante max, il y a en moyenne 79.1 minerais par partie. L'écart type passe 6 à 3.3. La répartition sur la carte est plus uniforme.
 
 ## Liens
 

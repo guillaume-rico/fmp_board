@@ -210,6 +210,22 @@ function valtoshortint(intval) {
     return 5;
   }
 }
+function valtoint(intval) {
+  if (intval == "u") {
+    return 0;
+  } else if (intval == "e") {
+    return 25;
+  } else if (intval == "i") {
+    return 31;
+  } else if (intval == "a") {
+    return 43;
+  } else if (intval == "s") {
+    return 90;
+  } else {
+    return 95;
+  }
+}
+
 // Conversion float--> couleur
 function definecolor(slope) {
 

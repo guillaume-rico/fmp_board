@@ -467,4 +467,95 @@
 
         return groundstyle;
     };
+    
+    // Charge une carte
+    Terrain.prototype.initboard = function(map) {
+
+        var width = map[0].length;
+        var height = map.length;
+        var count = 0;
+
+        for (var y = 0; y < height ; y++) {
+            for (var x = 0; x < width ; x++) {
+                
+                color[count] = map[y][x];
+                groundstyle[count] = valtoshortint(map[y][x]);
+                this.set(x,y,valtoint(map[y][x]));
+                positionXY[count] = x + "-" + y;
+                count = count + 1;
+            }
+        }
+        
+        return groundstyle;
+    }
+    
+    // Retourne la position du minerai
+    Terrain.prototype.positionminerai = function(max) {
+        var position = [];
+        var positionidx = [];
+        var starti = 0;
+        var startj = 0;
+        for (var i = starti; i < this.nbCol ; i = i + 3) {
+            
+            yoffest = 0;
+            if (i % 2 == 0 && starti == 1) {
+                yoffest = 1;
+            }
+            
+            //i = 0  var j = (Math.floor(i / 3) % 3 + Math.floor(i / 6) % 3 + 0) % 3
+            for (var j = (Math.floor(i / 3) % 3 + Math.floor(i / 6) % 3 + yoffest + startj) % 3; j < this.nbRow ; j = j + 3) {
+                if (intoshortint(this.get(i,j)) > 1) {
+                    position.push({"i":i, "j":j});
+                    positionidx[i + "-" + j] = {"i":i, "j":j};
+                }
+            }  
+        }
+        
+        // Si l'option max est définie, on complete 
+        if (max == true) {
+            var point = {};
+            // Pour chaque hexagone 
+            for (var i = 0; i < this.nbCol ; i++) {
+                for (var j = 0; j < this.nbRow ; j++) {
+                    point.i = i;
+                    point.j = j;
+                    var find = 0;
+                    
+                    name = point.i + "-" + point.j;
+                    if (name in positionidx) {
+                        find = 1;
+                    } else {
+                        // On fait la liste des voisins
+                        var voisins = hex_neighbor(point);
+                        for (var v = 0; v < voisins.length ; v++) {
+                            
+                            voisinsname = voisins[v].i + "-" + voisins[v].j;
+                            if (voisinsname in positionidx) {
+                                find = 1;
+                                break;
+                            }
+                            
+                            var voisins2 = hex_neighbor(voisins[v]);
+                            for (var v2 = 0; v2 < voisins2.length ; v2++) {
+                                voisins2name = voisins2[v2].i + "-" + voisins2[v2].j;
+                                if (voisins2name in positionidx) {
+                                    find = 1;
+                                    break;
+                                }
+                            }
+                            
+                        }
+                    }
+                    
+                    if (find == 0 && (intoshortint(this.get(i,j)) > 1) ) {
+                        positionidx[i + "-" + j] = {"i":i, "j":j};
+                        position.push({"i":i, "j":j});
+                    }
+                }  
+            }
+        }
+        
+        return position;
+    }
+
       

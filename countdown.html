@@ -2,6 +2,8 @@
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
+        <script type="text/javascript" src="src/d3.min.js"></script>
+        <script type="text/javascript" src="src/d3.hexbin.js"></script>	
         <style type="text/css">
             html,body
             {
@@ -13,12 +15,11 @@
                margin: 0 auto;
             }
 
-            .container
+            .count
             {  
                 height: 100%;
                 display: table-cell;   
                 vertical-align: middle;
-                font-size: 600px;
                 font-family : Helvetica, Arial, sans-serif;
             }
             .bottom
@@ -32,6 +33,13 @@
             @font-face{
                 font-family : "digital-7.italic";
                 src :'src/digital-7.italic.ttf';
+            }
+            .progress-meter .shadow {
+              fill: #888888;
+            }
+
+            .progress-meter .foregroundMinute {
+              fill: #BBBBBB;
             }
         </style>
         <script>
@@ -56,8 +64,6 @@
                 minutes = minutes < 10 ? "0" + minutes : minutes;
                 seconds = seconds < 10 ? "0" + seconds : seconds;
 
-                display.textContent = minutes + ":" + seconds; 
-
                 if (diff <= 0) {
                     clearInterval(refreshIntervalId);
                     document.body.style.background = "red";
@@ -75,6 +81,10 @@
                     document.body.style.background = "orange";
                     audioTrente.play();
                 }
+                
+                // Mise à jour de l'arc         
+                updateArc(minute, diff, totalduration, minutes + ":" + seconds);
+                
             };
             
             function reloadTimer() {
@@ -90,15 +100,14 @@
             var audioTrente = new Audio('src/Temple_Bell.mp3');
             var audioStop = new Audio('src/Warning_Siren.mp3');
             var duration = 3 * 60;
+            var totalduration = duration;
             var trenteSecondesAlert = 0;
             var zeroSecondesAlert = 0;
             var start = 0;
             var pause = 0;
             var pauseOldDiff = 0;
             var refreshIntervalId = 0;
-            
-            
-            
+
             window.onload = function () {
                 display = document.querySelector('#time');
                 start = Date.now();
@@ -112,16 +121,18 @@
                 //B 66
                 if (evt.keyCode == 66) {
                     duration = duration + 60;
+                    totalduration = diff + 60;
                     reloadTimer();
                 }
                 //G 71
                 if (evt.keyCode == 71) {
-                    duration = duration - 60;
+                    duration = diff - 60;
                     reloadTimer();
                 }
                 //N 78
                 if (evt.keyCode == 78) {
                     duration = 3 * 60;
+                    totalduration = duration;
                     start = Date.now();
                     reloadTimer();
                 }
@@ -149,10 +160,110 @@
     </head>
 
     <body style="background:#00cc00;" >
+        
         <table>
-            <tr><td><div class="container" id="time" >03:00</div></td></tr>
+            <tr><td><div id="clock"></div></td></tr>
             <tr><td><p class="center" >Espace : Pause -- N : Joueur suivant -- B : Boulette  -- G: -1 minute</p></td></tr>
         </table>
+        
+        <script>
+            var width = window.innerWidth * 0.9;    //define clock width
+            var height = window.innerHeight * 0.85;    //define clock height
+            var pi2 = 2 * Math.PI;
+            var sizeMin = Math.min(width,height)
+            
+            var radiusIn = sizeMin / 3;
+            var radiusOut = sizeMin / 2.5;
+
+            var svg = d3.select("#clock").append("svg")
+                .attr("width", width)
+                .attr("height", height)
+                .append("g")
+                .attr("transform", "translate(" + width/2 + "," + height/2 + ")");
+
+            function createDate(strDate) {
+                var format = d3.time.format("%Y-%m-%d %H:%M:%S");
+                return format.parse(strDate);
+            }
+
+            function newArc(name, inner, outer, position) {
+                var arc = d3.svg.arc()
+                    .startAngle(00)
+                    .endAngle(pi2)
+                    .innerRadius(inner)
+                    .outerRadius(outer);
+                
+                var meter = svg.append("g")
+                   .attr("class","progress-meter")
+                   .attr("transform", "translate(0,0)");
+                
+                var textId = meter.append("text")
+                   .attr("text-anchor", "middle")
+                   .attr("dy", "0.25em")
+                   .attr("id", "timedisplay")
+                   .style("font-size",sizeMin / 4 + "px")
+                   .attr("class","count");
+
+                var shadow = meter.append("path")
+                    .attr("class", "shadow")
+                    .attr("transform", "translate(0, 5)");
+                
+                var foreground = meter.append("path")
+                    .attr("class", "foreground"+name);
+                
+                return [foreground, shadow, arc, textId];
+            }
+             
+            function updateArc(arc, value, target, texte) {
+                if (value == target)
+                    value = 0;
+                
+                srtAngle = (target - value) * pi2 / target;
+                if (srtAngle >  6.283)
+                     srtAngle = 0;
+                     
+                arc[0].attr("d", arc[2].startAngle(srtAngle));
+                arc[1].attr("d", arc[2].startAngle(srtAngle));
+                
+                arc[3].text(texte);
+            }
+
+            function remainingDays(current, target) {
+                return Math.floor((target - current) / 1000 / 60 / 60 / 24);
+            }
+
+            function remainingHours(current, target) {
+                return Math.floor((target - current) / 1000 / 60 / 60) % 24;
+            }
+
+            function remainingMinutes(current, target) {
+                return Math.floor((target - current) / 1000 / 60) % 60;
+            }
+
+            function remainingSeconds(current, target) {
+                return Math.floor((target - current) / 1000) % 60;
+            }
+
+            var minute;
+            function createClock(start, end, width, height, radiusIn, radiusOut) {
+                minute = newArc("Minute", radiusIn, radiusOut, 1); 
+
+                var textg = svg.append("g")
+                    .attr("transform", "translate(0," + height/3 + ")");
+                
+                var text = textg.append("text")
+                   .attr("text-anchor", "middle")
+                   .attr("class","details");
+
+            }
+
+            var startDate = createDate("2013-08-28 10:00:00"); //define start date for clock
+            var endDate = createDate("2016-09-10 14:00:00"); //define end date for 
+            createClock(startDate, endDate, width, height, radiusIn, radiusOut);
+
+            
+            
+        </script>
         
         
     </body>
