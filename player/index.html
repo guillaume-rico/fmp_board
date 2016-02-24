@@ -48,9 +48,9 @@
         marree: 0
     };
     
-    var margin = {top: 40, right:80, bottom:80, left: 40},
-        width =  0.8 * $(window).width() ,
-        height = 0.8 * $(window).height() ;
+    var margin = {top: 40, right:40, bottom:40, left: 40},
+        width =  0.97 * $(window).width() ,
+        height = 0.97 * $(window).height() ;
 
     var zoom = d3.behavior.zoom()
         .scaleExtent([1, 10])
@@ -63,10 +63,9 @@
         .on("dragend", dragended);
 
     var svg = d3.select("body").append("svg")
-        .attr("width", width + margin.left + margin.right)
-        .attr("height", height + margin.top + margin.bottom)
+        .attr("width", width )
+        .attr("height", height)
       .append("g")
-        .attr("transform", "translate(" + margin.left + "," + margin.right + ")")
         .call(zoom);
 
     var rect = svg.append("rect")
@@ -75,25 +74,52 @@
         .style("fill", "none")
         .style("pointer-events", "all");
 
-    var container = svg.append("g");
+    var container = svg.append("g").attr("transform", "translate(20,20)")
 
+           
     // On ajoute la zone de l'utilisateur
-    /*
     var rectangle = svg.append("rect")
-                            .attr("x", 10)
-                            .attr("y", 0.8 * $(window).height())
-                            .attr("width", 50)
-                            .attr("height", 100);
-    */
-    
+                            .attr("x", 1.5)
+                            .attr("y", 0.9 * height)
+                            .attr("width", width - 3)
+                            .attr("height", 0.1 * height)
+                            .attr("stroke","#000")
+                            .attr("fill","white")
+                            .attr("stroke-width", "3px");
+    var rectangle = svg.append("text")
+                            .attr("x", 1.5)
+                            .attr("y", 0.9 * height)
+                            .attr("dy", "1em")
+                            .text("Tour : 1/25");
+    var rectangle = svg.append("text")
+                            .attr("x", 1.5)
+                            .attr("y", 0.9 * height)
+                            .attr("dy", "2em")
+                            .text("Point restant : 15/15");
+    var rectangle = svg.append("text")
+                            .attr("x", 1.5)
+                            .attr("y", 0.9 * height)
+                            .attr("dy", "3em")
+                            .text("Temps restant : 1:35");
+    var rectangle = svg.append("text")
+                            .attr("x", 1.5)
+                            .attr("y", 0.9 * height)
+                            .attr("dy", "4em")
+                            .text("Marée actuelle : normale");
+    var rectangle = svg.append("text")
+                            .attr("x", 1.5)
+                            .attr("y", 0.9 * height)
+                            .attr("dy", "5em")
+                            .text("Marée actuelle : basse");
+                            
     // On ajoute les hexagones
     //The maximum radius the hexagons can have to still fit the screen
     // width/((MapColumns + 0.5) * Math.sqrt(3))
     // height/((MapRows + 1/3) * 1.5)
     MapColumns = 37 ;
     MapRows = 23;
-    var hexRadius = d3.min([width/((MapColumns + 1/3) * 1.5),
-                            height/((MapRows + 0.5) * Math.sqrt(3))]);
+    var hexRadius = d3.min([width * 0.85 /((MapColumns + 1/3) * 1.5),
+                            height * 0.85 /((MapRows + 0.5) * Math.sqrt(3))]);
     var hexbin = d3.hexbin()
                    .radius(hexRadius);    
     // Calculate the center positions of each hexagon	
@@ -114,37 +140,68 @@
 
     // On charge le positionnement des pions
     var pion = {
-        width: 1.5 * hexRadius,
-        height: 1.5 * hexRadius,
-        xoffset: 1.5 * hexRadius / 2,
-        yoffset: 1.5 * hexRadius / 2
+        minerai: {
+            width: 1 * hexRadius,
+            height: 1 * hexRadius,
+            xoffset: 1 * hexRadius / 2,
+            yoffset: 1 * hexRadius / 2,
+        },
+        char: {
+            width: 1.3 * hexRadius,
+            height: 1.3 * hexRadius,
+            xoffset: 1.3 * hexRadius / 2,
+            yoffset: 1.3 * hexRadius / 2,
+        },
+        gros_tas: {
+            width: 2 * hexRadius,
+            height: 2 * hexRadius,
+            xoffset: 2 * hexRadius / 2,
+            yoffset: 2 * hexRadius / 2,
+        },
+        vedette: {
+            width: 1.3 * hexRadius,
+            height: 1.3 * hexRadius,
+            xoffset: 1.3 * hexRadius / 2,
+            yoffset: 1.3 * hexRadius / 2,
+        },
+        barge: {
+            width: 1.3 * hexRadius,
+            height: 1.3 * hexRadius,
+            xoffset: 1.3 * hexRadius / 2,
+            yoffset: 1.3 * hexRadius / 2,
+        },
+        pondeuse: {
+            width: 1.3 * hexRadius,
+            height: 1.3 * hexRadius,
+            xoffset: 1.3 * hexRadius / 2,
+            yoffset: 1.3 * hexRadius / 2,
+        },
+        crabe: {
+            width: 1.3 * hexRadius,
+            height: 1.3 * hexRadius,
+            xoffset: 1.3 * hexRadius / 2,
+            yoffset: 1.3 * hexRadius / 2,
+        },
+        ponton: {
+            width: 1.3 * hexRadius,
+            height: 1.3 * hexRadius,
+            xoffset: 1.3 * hexRadius / 2,
+            yoffset: 1.3 * hexRadius / 2,
+        },
+        astronef: {
+            width: 4.6 * hexRadius,
+            height: 4.6 * hexRadius,
+            xoffset: 4.6 * hexRadius / 2,
+            yoffset: 5 * hexRadius / 2,
+        }
     };
 
-    /*
-    d3.json("src/pion.json", function(error, dots) {
-        if (error) return console.warn(error);
-        
-        // On met à jour la position XY
-        for (index = 0; index < dots.length; ++index) {
-            dots[index].x = svgIJtoXYimage(hexRadius,pion,dots[index]).x;
-            dots[index].y = svgIJtoXYimage(hexRadius,pion,dots[index]).y;
-        }
-        
-        dot = container.append("g")
-                .attr("class", "dot")
-                    .selectAll("circle")
-                    .data(dots)
-                        .enter().append("svg:image")
-                            .attr("x", function (d) { return svgIJtoXYimage(hexRadius,pion,d).x ; })
-                            .attr("y", function (d) { return svgIJtoXYimage(hexRadius,pion,d).y; })
-                            .attr('width', pion.width)
-                            .attr('height', pion.height)
-                            .attr("xlink:href",function (d) { return "img/" + d.type + "_0.png"; })
-                            .attr("figurine", function (d) { return d.type; })
-                            .call(drag);
-    });
-    */
 
+
+
+
+
+    
     var fillMarecage = container.append("pattern")
         .attr("id", "marecage")
         .attr("patternUnits", "userSpaceOnUse")
@@ -220,47 +277,88 @@
         d3.select(this).classed("dragging", true);
     }
 
-    var startDraggPosition = {i: -1,j: -1};
-    var lastDraggPosition = {i: -1,j: -1};
+    var startDraggPosition = {i: -1,j: -1,type:"char"};
+    var lastDraggPosition = {i: -1,j: -1,type:"char"};
     var lastdragstate = "invalid";
     function dragged(d) {
+    
+        if (d.drag == "invalid") return;
+    
         d3.select(this).attr("x", d.x = d3.event.x).attr("y", d.y = d3.event.y);
         // Verification qu'on a le droit de se poser sur cette case
-        position = svgXYtoHexIndeximage(hexRadius,pion,d3.event.x,d3.event.y);
+        position = svgXYtoHexIndeximage(hexRadius,d,pion,d3.event.x,d3.event.y);
+        
         // Type de figurine 
         figurine = d3.select(this).attr("figurine");
-        // Verficiation de la position
-        lastdragstate = rules_check_position(figurine,position,game.marree);
-        
-        //
+        position.type = d.type;
+        position.orientation = d.orientation;
+
         if (startDraggPosition.i == -1) {
             startDraggPosition = position;
         } else if (lastDraggPosition.i != position.i || lastDraggPosition.j != position.j ) {
-        
+            // Verificiation de la position
+            lastdragstate = rules_check_position(position,game);
             // Si c'est valide on met cet hexagone en vert 
             d3.selectAll(".hexagon").classed("hexgreen", false);
             d3.selectAll(".hexagon").classed("hexred", false);
-            if (lastdragstate == "valid") {
-                d3.select(".hexagonindex" + position.i + "-" + position.j + "").classed("hexgreen",true);
-            } else {
-                d3.select(".hexagonindex" + position.i + "-" + position.j + "").classed("hexred",true);
-            }
 
-            listOfHex = astar(startDraggPosition,position,d,game);
-            // On met en vert le chemin
-            for (index = 0; index < listOfHex.length; ++index) {
-                d3.select(".hexagonindex" + listOfHex[index].i + "-" + listOfHex[index].j + "").classed("hexgreen",true);
-            }
-            // On change l'axe de l'image
-            if (listOfHex.length >= 2) {
-                d3.select(this).attr("xlink:href",function (d) { return "img/" + d.type + "_" + angularIJ(listOfHex[listOfHex.length - 2],listOfHex[listOfHex.length - 1]) + ".png"; });
-            }
+            // Si c'est une pose pur sans calcul de trajectoire
+            if (position.type == "astronef") {
+                // Si possible, on tourne l'astronef
+                if (lastdragstate == "invalid") {
+                    position.orientation = (position.orientation + 180) % 360;
+                    lastdragstate2 = rules_check_position(position,game);
+                    if (lastdragstate2 == "invalid") {
+                        position.orientation = (position.orientation + 180) % 360;
+                    } else {
+                        lastdragstate = lastdragstate2;
+                        d3.select(this).attr("xlink:href","img/astronef_" + position.orientation + ".png");
+                        // On met à jour la donnée le concernant
+                        d3.select(this).data()[0].orientation = position.orientation;
+
+                    }
+                }
             
+                if (lastdragstate == "valid") {
+                    style = "hexgreen";
+                } else {
+                    style = "hexred";
+                }
+                listOfHex = getHexOfFigurine(position);
+                for (index = 0; index < listOfHex.length; ++index) {
+                    d3.select(".hexagonindex" + listOfHex[index].i + "-" + listOfHex[index].j + "").classed(style,true);
+                }                
+            } else {
+                // On calcul le chemin
+                listOfHex = astar(startDraggPosition,position,d,game);
+                if (listOfHex.length <= 1) {
+                    lastdragstate = "invalid";
+                }
+
+                // On met en vert le chemin
+                for (index = 0; index < listOfHex.length; ++index) {
+                    d3.select(".hexagonindex" + listOfHex[index].i + "-" + listOfHex[index].j + "").classed("hexgreen",true);
+                }
+                
+                if (lastdragstate == "valid") {
+                    d3.select(".hexagonindex" + position.i + "-" + position.j + "").classed("hexgreen",true);
+                } else {
+                    d3.select(".hexagonindex" + position.i + "-" + position.j + "").classed("hexred",true);
+                }
+                
+                // On change l'axe de l'image si il y a eu un déplacement et que ce n'est pas un astronef
+                if (listOfHex.length >= 2 && position.type != "astronef") {
+                    d3.select(this).attr("xlink:href",function (d) { return "img/" + d.type + "_" + angularIJ(listOfHex[listOfHex.length - 2],listOfHex[listOfHex.length - 1]) + ".png"; });
+                }
+            }
             lastDraggPosition = position;
         }
     }
 
     function dragended(d) {
+    
+        if (d.drag == "invalid") return;
+    
         // On place le pion au bon endroit
         d3.selectAll(".hexagon").classed("hexgreen", false);
         d3.selectAll(".hexagon").classed("hexred", false);
@@ -274,12 +372,34 @@
         startDraggPosition = {i: -1,j: -1};
     }
 
+    d3.json("src/pion.json", function(error, dots) {
+        if (error) return console.warn(error);
+        
+        // On met à jour la position XY
+        for (index = 0; index < dots.length; ++index) {
+            dots[index].x = svgIJtoXYimage(hexRadius,pion,dots[index]).x;
+            dots[index].y = svgIJtoXYimage(hexRadius,pion,dots[index]).y;
+        }
+        
+        dot = container.append("g")
+                .attr("class", "dot")
+                    .selectAll("circle")
+                    .data(dots)
+                        .enter().append("svg:image")
+                            .attr("x", function (d) { return svgIJtoXYimage(hexRadius,pion,d).x ; })
+                            .attr("y", function (d) { return svgIJtoXYimage(hexRadius,pion,d).y; })
+                            .attr('width', function (d) { return pion[d.type].width;})
+                            .attr('height', function (d) { return pion[d.type].height;})
+                            .attr("xlink:href",function (d) { return "img/" + d.type + "_0.png"; })
+                            .attr("figurine", function (d) { return d.type; })
+                            .call(drag);
+    });
+    
     // On ajoute les cailloux
     for (index = 0; index < positionminerai.length; ++index) {
         positionminerai[index].x = svgIJtoXYimage(hexRadius,pion,positionminerai[index]).x;
         positionminerai[index].y = svgIJtoXYimage(hexRadius,pion,positionminerai[index]).y;
     }
-    console.log( positionminerai.length);
     caiilou = container.append("g")
             .attr("class", "minerai")
                 .selectAll("circle")
@@ -287,9 +407,44 @@
                     .enter().append("svg:image")
                         .attr("x", function (d) { return svgIJtoXYimage(hexRadius,pion,d).x ; })
                         .attr("y", function (d) { return svgIJtoXYimage(hexRadius,pion,d).y; })
-                        .attr('width', pion.width)
-                        .attr('height', pion.height)
+                        .attr('width', pion.minerai.width)
+                        .attr('height', pion.minerai.height)
                         .attr("xlink:href","img/caillou.png")
+/*
+    var astronef = [{
+        i: 3,
+        j: 8,
+        x: 0,
+        y: 0,
+        type: "astronef",
+        orientation:180,
+        drag: "invalid"
+    },{
+        i: 1,
+        j: 8,
+        x: 0,
+        y: 0,
+        type: "astronef",
+        orientation:0,
+        drag: "invalid"
+    }];
+    for (index = 0; index < astronef.length; ++index) {
+        astronef[index].x = svgIJtoXYimage(hexRadius,pion,astronef[index]).x;
+        astronef[index].y = svgIJtoXYimage(hexRadius,pion,astronef[index]).y;
+    }
+    //svg.append("svg:image").data(astronef)
+    var rectangle = container.append("g")
+            .attr("class", "astronef")
+                .selectAll("circle")
+                .data(astronef).enter().append("svg:image")
+                    .attr("x", function (d) { return svgIJtoXYimage(hexRadius,pion,d).x ; })
+                    .attr("y", function (d) { return svgIJtoXYimage(hexRadius,pion,d).y ; })
+                    .attr("width", pion.astronef.width)
+                    .attr("height", pion.astronef.height)
+                    .attr("xlink:href",function (d) { return "img/astronef_" + d.orientation + ".png"; })
+                    .call(drag);
+*/  
+    initour(1,"start");
     </script>
     </body>
 </html>

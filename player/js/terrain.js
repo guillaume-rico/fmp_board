@@ -2,40 +2,49 @@
       
       
       
-      function Terrain(nbCol,nbRow) {
+function Terrain(nbCol,nbRow) {
 
-        var sizetemp = 0;
-        if (nbRow > nbCol) {
-            for (var i = 1; sizetemp < nbRow; i++ ) {
-                sizetemp = Math.pow(2, i) + 1;
-            }
-        } else {
-            for (var i = 1; sizetemp < nbCol; i++ ) {
-                sizetemp = Math.pow(2, i) + 1;
-            }
+    var sizetemp = 0;
+    if (nbRow > nbCol) {
+        for (var i = 1; sizetemp < nbRow; i++ ) {
+            sizetemp = Math.pow(2, i) + 1;
         }
-          
-        this.size = Math.pow(2, i - 1) + 1;
-        this.max = this.size - 1;
-        this.nbCol = nbCol;
-        this.nbRow = nbRow;
-        //this.map = new Float32Array(this.size * this.size);
-        
-        this.map = new Array(this.size * this.size);
-        for (var i = 0; i < this.size * this.size; i++) {
-          this.map[i] = 0;
+    } else {
+        for (var i = 1; sizetemp < nbCol; i++ ) {
+            sizetemp = Math.pow(2, i) + 1;
         }
-        
-      }
+    }
       
-      Terrain.prototype.get = function(x, y) {
-        if (x < 0 || x > this.max || y < 0 || y > this.max) return -1;
-        return this.map[y + this.size * x];
-      };
+    this.size = Math.pow(2, i - 1) + 1;
+    this.max = this.size - 1;
+    this.nbCol = nbCol;
+    this.nbRow = nbRow;
+    //this.map = new Float32Array(this.size * this.size);
+
+    this.map = new Array(this.size * this.size);
+    for (var i = 0; i < this.size * this.size; i++) {
+        this.map[i] = 0;
+    }
+
+    // Carte des minerais 
+    this.minerai =  new Array(nbCol);
+    for (var i = 0; i < this.nbCol; i++) {
+        this.minerai[i] =  [];
+        for (var j = 0; j < this.nbRow; j++) {
+            this.minerai[i][j] = 0;
+        }
+    }
+
+}
       
-      Terrain.prototype.set = function(x, y, val) {
-        this.map[y + this.size * x] = val;
-      };
+Terrain.prototype.get = function(x, y) {
+    if (x < 0 || x > this.max || y < 0 || y > this.max) return -1;
+    return this.map[y + this.size * x];
+};
+
+Terrain.prototype.set = function(x, y, val) {
+    this.map[y + this.size * x] = val;
+};
       
       function hexLimits(hexagone,nbCol,row) {
         if (hexagone) {
@@ -505,8 +514,11 @@
             //i = 0  var j = (Math.floor(i / 3) % 3 + Math.floor(i / 6) % 3 + 0) % 3
             for (var j = (Math.floor(i / 3) % 3 + Math.floor(i / 6) % 3 + yoffest + startj) % 3; j < this.nbRow ; j = j + 3) {
                 if (intoshortint(this.get(i,j)) > 1) {
-                    position.push({"i":i, "j":j});
-                    positionidx[i + "-" + j] = {"i":i, "j":j};
+                    position.push({"i":i, "j":j, "type" : "minerai"});
+                    this.minerai[i][j] = 1;
+                    positionidx[i + "-" + j] = {"i":i,
+                                                "j":j,
+                                                "type" : "minerai"};
                 }
             }  
         }
@@ -548,8 +560,9 @@
                     }
                     
                     if (find == 0 && (intoshortint(this.get(i,j)) > 1) ) {
-                        positionidx[i + "-" + j] = {"i":i, "j":j};
-                        position.push({"i":i, "j":j});
+                        positionidx[i + "-" + j] = {"i":i,"j":j,"type" : "minerai"};
+                        this.minerai[i][j] = 1;
+                        position.push({"i":i, "j":j, "type" : "minerai"});
                     }
                 }  
             }

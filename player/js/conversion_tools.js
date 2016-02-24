@@ -22,8 +22,8 @@ function svgXYtoHexIndex (radius,x,y) {
     };
 }
 
-function svgXYtoHexIndeximage (radius,pion,x,y) {
-    newposition = svgXYtoHexIndex (radius,x + pion.xoffset,y + pion.yoffset);
+function svgXYtoHexIndeximage (radius,figurine,pion,x,y) {
+    newposition = svgXYtoHexIndex (radius,x + pion[figurine.type].xoffset,y + pion[figurine.type].yoffset);
     return newposition;
 }
 
@@ -39,16 +39,15 @@ function svgIJtoXY (hexRadius,position) {
 function svgIJtoXYimage (hexRadius,pion,position) {
     newPosition = svgIJtoXY(hexRadius,position)
     return {
-        x: newPosition.x - pion.xoffset,
-        y: newPosition.y - pion.yoffset
+        x: newPosition.x - pion[position.type].xoffset,
+        y: newPosition.y - pion[position.type].yoffset
     };
 }
 
 // Compute angular position 
 function angularIJ (position1,position2) {
     var returnval = 0;
-    console.log("position1:" + position1.i + "-" + position1.j);
-    console.log("position2:" + position2.i + "-" + position2.j);
+    //console.log("position1:" + position1.i + "-" + position1.j);
     //console.log("position2:" + position2.i + "-" + position2.j);
     if (position1.i == position2.i) {
         if (position1.j > position2.j) {
@@ -271,3 +270,9 @@ return {
 function cube_distance(a, b) {
 return (Math.abs(a.x - b.x) + Math.abs(a.y - b.y) + Math.abs(a.z - b.z)) / 2;
 }
+
+d3.selection.prototype.moveToFront = function() {
+  return this.each(function(){
+    this.parentNode.appendChild(this);
+  });
+};
