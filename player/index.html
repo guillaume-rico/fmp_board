@@ -9,6 +9,8 @@
         <script type="text/javascript" src="js/rules.js"></script>
         <script type="text/javascript" src="js/conversion_tools.js"></script>
         <script type="text/javascript" src="js/initialisation.js"></script>
+        <script type="text/javascript" src="js/timer.js"></script>
+        <script type="text/javascript" src="js/IA.js"></script>
         <style>
 
         .dot circle {
@@ -48,6 +50,25 @@
         marree: 0
     };
     
+    var player = {
+        "num1" : {
+            "boulettes" : 0,
+            "points" : 0
+        },
+        "num2" : {
+            "boulettes" : 0,
+            "points" : 0
+        },
+        "num3" : {
+            "boulettes" : 0,
+            "points" : 0
+        },
+        "num4" : {
+            "boulettes" : 0,
+            "points" : 0
+        }
+    };
+    
     var margin = {top: 40, right:40, bottom:40, left: 40},
         width =  0.97 * $(window).width() ,
         height = 0.97 * $(window).height() ;
@@ -78,7 +99,8 @@
 
            
     // On ajoute la zone de l'utilisateur
-    var rectangle = svg.append("rect")
+    var info = {};
+    info.rectangle = svg.append("rect")
                             .attr("x", 1.5)
                             .attr("y", 0.9 * height)
                             .attr("width", width - 3)
@@ -86,31 +108,43 @@
                             .attr("stroke","#000")
                             .attr("fill","white")
                             .attr("stroke-width", "3px");
-    var rectangle = svg.append("text")
-                            .attr("x", 1.5)
+    info.tour = svg.append("text")
+                            .attr("x", 4)
                             .attr("y", 0.9 * height)
                             .attr("dy", "1em")
-                            .text("Tour : 1/25");
-    var rectangle = svg.append("text")
-                            .attr("x", 1.5)
+                            .text("Tour :");
+    info.point = svg.append("text")
+                            .attr("x", 4)
+                            .attr("y", 0.9 * height)
+                            .attr("dy", "1em").attr("dx", "5em")
+                            .text("Points restants : 15/15");
+    info.temps = svg.append("text")
+                            .attr("x", 4)
                             .attr("y", 0.9 * height)
                             .attr("dy", "2em")
-                            .text("Point restant : 15/15");
-    var rectangle = svg.append("text")
-                            .attr("x", 1.5)
+                            .text("Temps restant : 1:35");
+    info.maree = svg.append("text")
+                            .attr("x", 4)
                             .attr("y", 0.9 * height)
                             .attr("dy", "3em")
-                            .text("Temps restant : 1:35");
-    var rectangle = svg.append("text")
-                            .attr("x", 1.5)
+                            .text("Marée actuelle : NA");
+    info.maree_next = svg.append("text")
+                            .attr("x", 4)
+                            .attr("y", 0.9 * height)
+                            .attr("dy", "3em").attr("dx", "8em")
+                            .text("Marée actelle : basse");
+    info.boulette = svg.append("text")
+                            .attr("x", 4)
                             .attr("y", 0.9 * height)
                             .attr("dy", "4em")
-                            .text("Marée actuelle : normale");
-    var rectangle = svg.append("text")
-                            .attr("x", 1.5)
-                            .attr("y", 0.9 * height)
-                            .attr("dy", "5em")
-                            .text("Marée actuelle : basse");
+                            .text("Nb boulettes :");
+    info.next_turn = svg.append("svg:image")
+                            .attr("x", 230 )
+                            .attr("y", 0.9 * height + 10)
+                            .attr("width", 32)
+                            .attr("height", 32)
+                            .attr("xlink:href","img/rotate-option.png")
+                            .on("click",function(){initour(game.tour,"end");});
                             
     // On ajoute les hexagones
     //The maximum radius the hexagons can have to still fit the screen
@@ -318,7 +352,7 @@
 
                     }
                 }
-            
+
                 if (lastdragstate == "valid") {
                     style = "hexgreen";
                 } else {
@@ -444,7 +478,16 @@
                     .attr("xlink:href",function (d) { return "img/astronef_" + d.orientation + ".png"; })
                     .call(drag);
 */  
-    initour(1,"start");
+
+    // On crée les IA
+    var IA1 = new IA();
+    var IA2 = new IA();
+    var IA3 = new IA();
+
+    initour(game.tour,"start");
+    
+    
+    
     </script>
     </body>
 </html>

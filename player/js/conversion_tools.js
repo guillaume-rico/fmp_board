@@ -30,8 +30,8 @@ function svgXYtoHexIndeximage (radius,figurine,pion,x,y) {
 // Convert IJ position to XY
 function svgIJtoXY (hexRadius,position) {
     return {
-        x: hexRadius * position.i * 1.5,
-        y: hexRadius * position.j * 1.75 + position.i % 2 * hexRadius
+        x: hexRadius * position.i * 1.499,
+        y: hexRadius * position.j * 1.749 + position.i % 2 * hexRadius
     };
 }
 
@@ -131,6 +131,73 @@ function hex_neighbor(hex) {
             neighbor.push({i:(hex.i + 1), j:(hex.j - 1)});
         }
     }
+    return neighbor;
+}
+
+// Cette fonction retourne la position des voisins d'un astronef
+function astronef_neighbor(position, rang) {
+    
+    var neighbor = [];
+    if (rang == 1) {
+        if (position.orientation == 180) {
+            if (position.j + 1 < MapRows)   neighbor.push({"i": position.i,"j":  position.j + 1});
+            neighbor.push({"i": position.i - 1,"j":  position.j - 1 + position.i % 2});
+            neighbor.push({"i": position.i + 1,"j":  position.j - 1 + position.i % 2});
+        } else {
+            // Orientation 0 : la pointe est vers le bas
+            neighbor.push({"i": position.i,"j":  position.j - 1});
+            neighbor.push({"i": position.i - 1,"j":  position.j + position.i % 2});
+            neighbor.push({"i": position.i + 1,"j":  position.j + position.i % 2});
+        }
+    } else if (rang == 2) {
+        if (position.orientation == 180) {
+            // La pointe est vers le haut
+            // Tourelle du haut 
+            //  gauche
+            neighbor.push({"i": position.i - 1,"j":  position.j - 2 + position.i % 2});
+            // Haut
+            neighbor.push({"i": position.i,"j":  position.j - 2});
+            // Droite
+            neighbor.push({"i": position.i + 1,"j":  position.j - 2 + position.i % 2});
+            // Tourelle bas gauche
+            // Haut 
+            neighbor.push({"i": position.i - 2,"j":  position.j});
+            // gauche
+            neighbor.push({"i": position.i - 2,"j":  position.j + 1});
+            // Bas
+            neighbor.push({"i": position.i - 1,"j":  position.j + 1 + position.i % 2});
+            // Tourelle bas droite
+            // Haut 
+            neighbor.push({"i": position.i + 2,"j":  position.j});
+            // droite
+            neighbor.push({"i": position.i + 2,"j":  position.j + 1});
+            // Bas
+            neighbor.push({"i": position.i + 1,"j":  position.j + 1 + position.i % 2});
+            
+        } else {
+            // Tourelle du bas 
+            //  gauche
+            neighbor.push({"i": position.i - 1,"j":  position.j + 1 + position.i % 2});
+            // Haut
+            neighbor.push({"i": position.i,"j":  position.j + 2});
+            // Droite
+            neighbor.push({"i": position.i + 1,"j":  position.j + 1 + position.i % 2});
+            // Tourelle haut gauche
+            // bas 
+            neighbor.push({"i": position.i - 2,"j":  position.j});
+            // gauche
+            neighbor.push({"i": position.i - 2,"j":  position.j - 1});
+            // haut
+            neighbor.push({"i": position.i - 1,"j":  position.j - 2 + position.i % 2});
+            // Tourelle haut droite
+            // bas 
+            neighbor.push({"i": position.i + 2,"j":  position.j});
+            // droite
+            neighbor.push({"i": position.i + 2,"j":  position.j - 1});
+            // Bas
+            neighbor.push({"i": position.i + 1,"j":  position.j - 2 + position.i % 2});
+        }
+    }
 
     return neighbor;
 }
@@ -147,7 +214,7 @@ function hex_neighbor(hex) {
 // Based on the works of http://www.playfuljs.com/realistic-terrain-in-130-lines/
 
 function intoval(intval) {
-  if (intval == 0) {
+  if (intval <= 0) {
     return "u";
   } else if (intval <= 27) {
     // Eau
@@ -163,7 +230,7 @@ function intoval(intval) {
   }
 }
 function intoshortint(intval) {
-  if (intval == 0) {
+  if (intval <= 0) {
     return 0;
   } else if (intval <= 27) {
     // Eau
@@ -179,7 +246,7 @@ function intoshortint(intval) {
   }
 }
 function shortintoval(intval) {
-  if (intval == 0) {
+  if (intval <= 0) {
     return "u";
   } else if (intval <= 1) {
     // Eau
@@ -271,8 +338,10 @@ function cube_distance(a, b) {
 return (Math.abs(a.x - b.x) + Math.abs(a.y - b.y) + Math.abs(a.z - b.z)) / 2;
 }
 
-d3.selection.prototype.moveToFront = function() {
-  return this.each(function(){
-    this.parentNode.appendChild(this);
-  });
-};
+// On renvoie un entier aléatoire entre une valeur min (incluse)
+// et une valeur max (exclue).
+// Attention : si on utilisait Math.round(), on aurait une distribution
+// non uniforme !
+function getRandomInt(min, max) {
+    return Math.floor(Math.random() * (max - min)) + min;
+}

@@ -1,4 +1,7 @@
 
+// Calcul la distance entre deux positions
+// unit doit contenir type
+// game doit contenir marree
 function astar (start,goal,unit,game) {
     
     var frontier = [];
@@ -21,7 +24,7 @@ function astar (start,goal,unit,game) {
        
        var neig = hex_neighbor(current);
        for (index = 0; index < neig.length; ++index) {
-            // S'il n'a pas été déjà visité et que le terrain est valide
+            // S'il n'a pas Ã©tÃ© dÃ©jÃ  visitÃ© et que le terrain est valide
             neig[index].type = unit.type;
            if (visited.indexOf(neig[index].i + "-" + neig[index].j) == -1
                 && rules_check_position(neig[index],game) == "valid") {
@@ -50,32 +53,27 @@ function astar (start,goal,unit,game) {
     
 }
 
-
+// Position doit contenir :
+// - i j et type
+// - Si type est astronef, elle doit aussi contenir orientation
+// game doit contenir marree
 function rules_check_position(position,game) {
-    // On récupère la nature du sol
+    // On rÃ©cupere la nature du sol
     sol = intoshortint(terrain.get(position.i, position.j));
-    // 3 Marécage - 4 sol - 5 montagne
+    // 3 MarÃ©cage - 4 sol - 5 montagne
     var returnval = "invalid";
 
     // Si c'est un astronef
     if (position.type == "astronef") {
-        // On vérifie que les 4 cases sont OK
+        // On vÃ©rifie que les 4 cases sont OK
         hex = getHexOfFigurine(position);
         returnval = "valid";
         for (index = 0; index < hex.length; ++index) {
             naturesol = intoshortint(terrain.get(hex[index].i, hex[index].j));
-            if (naturesol + game.marree < 3 || naturesol == 5) {
+            if (naturesol < 3 || naturesol == 5) {
                 returnval = "invalid";
                 break;
             }
-            /*
-            // Impossible de placer un astronef sur un minerai !
-            minerai = terrain.minerai[hex[index].i][hex[index].j];
-            if (minerai == 1) {
-                returnval = "invalid";
-                break;
-            }
-            */
         }
     } else {
         // S'il y a un minerai
@@ -86,14 +84,14 @@ function rules_check_position(position,game) {
                 case "crabe" :
                 case "minerai" :
                 case "char":
-                    // Si c'est supérieur à 3 c'est que c'est praticable
+                    // Si c'est supÃ©rieur Ã  3 c'est que c'est praticable
                     if (sol + game.marree >= 3) {
                         returnval = "valid";
                     }
                     break;
                 case "astronef" :
                 case "gros_tas":
-                    // Si c'est supérieur à 3 mais pas une montagne
+                    // Si c'est supÃ©rieur Ã  3 mais pas une montagne
                     if (sol + game.marree >= 3 && sol != 5) {
                         returnval = "valid";
                     }
@@ -101,7 +99,7 @@ function rules_check_position(position,game) {
                 case "barge":
                 case "vedette":
                 case "ponton":
-                    // Si c'est inférieur à 3 c'est que c'est que c'est de l'eau
+                    // Si c'est infÃ©rieur Ã  3 c'est que c'est que c'est de l'eau
                     if (sol + game.marree < 3) {
                         returnval = "valid";
                     }
@@ -113,7 +111,7 @@ function rules_check_position(position,game) {
     return returnval;
 }
 
-// On retourne la liste des hexagones occupés par une figurine
+// On retourne la liste des hexagones occupÃ©s par une figurine
 function getHexOfFigurine(position) {
     var hex = [];
     hex.push({"i": position.i,"j": position.j});
@@ -164,9 +162,68 @@ function getHexOfFigurine(position) {
     return hex;
 }
 
+function Marre() {
+    this.marrelist  = [];
+    this.marrelist  = [0,0]
+    this.marrelist  = this.marrelist.concat(this.compute("none"));
+    this.marrelist  = this.marrelist.concat(this.compute(this.marrelist [10]));
+    this.marrelist  = this.marrelist.concat(this.compute(this.marrelist [18]));
+}
+Marre.prototype.compute = function(marreeactuelle) {
+    var tempmarrelist = [];
+    // Il y a 5 cartes de chaque types (sauf si on dÃ©finit une carte comme Ã©tant sur le plateau)
+    var marretype = [-1, 0, 1];
+    var availablemarre = [];
+    for (var marretype = -1; marretype < 2; marretype++) {
+        if (marreeactuelle == marretype) {
+            nbcarte = 4;
+        } else {
+            nbcarte = 5;
+        }
+        for (var index = 0; index < nbcarte; index++) { 
+            availablemarre.push(marretype);
+        }
+    }
+
+    var selected = [];
+    // On en prend 9 
+    var a;
+    for (var index = 0; index < 9; a++) {
+        marrIndex = getRandomInt(0, availablemarre.length);
+        if (selected.indexOf(marrIndex) == -1) {
+            selected.push(marrIndex);
+            tempmarrelist.push(availablemarre[marrIndex]);
+            index++;
+        }
+    }
+    
+    return tempmarrelist;
+}
+Marre.prototype.get = function(numTour) {
+    return this.marrelist[numTour];
+}
+Marre.prototype.getName = function(numTour) {
+    var text = "";
+    switch (this.marrelist[numTour]) {
+        case -1 :
+            text = "basse";
+            break;
+        case 0 :
+            text = "normale";
+            break;
+        case 1 :
+            text = "haute";
+            break;
+    }
+    return text;
+}
+var marre = new Marre();
+
 var astrone = {};
 function initour (numtour,startOrEnd) {
-    
+
+    var nbpoints = 15;
+
     switch (numtour) {
         case 1 :
             // Placement des astronefs
@@ -192,20 +249,29 @@ function initour (numtour,startOrEnd) {
                                 .call(drag);
             } else {
                 //l'IA place ses pions 
+                position = IA1.placeastronef();
+                
                 
                 // On rend non draggable les astronefs
                 astrone[0].drag = "invalid";
+                
+                // On enleve les minerais
             }
 
+            nbpoints = 0;
+            
             break;
         case 2 :
             // Placement des pions
+            nbpoints = 0;
             break;
         case 3 :
             // 5 points
+            nbpoints = 5;
             break;
         case 4 :
             // 10 points
+            nbpoints = 10;
             break;
         case 5 :
         case 6 :
@@ -229,12 +295,54 @@ function initour (numtour,startOrEnd) {
             // 15 points
             break;
         case 21 :
-            // Décollage possible
+            // DÃ©collage possible
             break;
         case 25 :
             // Fin de la partie
             break;
     }
+    
+
+    // Si c'est le dÃ©but du tour
+    if (startOrEnd == "start") {
+        // Mise Ã  jour du texte des tours
+        info.tour.text("Tour : " + numtour + "/25");
+        
+        // On remet le compteur des points
+        player.num1.points = 0;
+        info.point.text("Points restants : " + player.num1.points + "/" + nbpoints);
+        
+        // on met Ã  jour le texte de la marÃ©e actuelle
+        info.maree.text("MarÃ©e : " + marre.getName(numtour - 1));
+        
+        // on met Ã  jour le texte de la marÃ©e actuelle
+        info.maree_next.text("future : " + marre.getName(numtour));
+
+        
+    } else {
+        
+        // S'il reste des points, on les crÃ©dites
+        // Mise Ã  jour des boulettes
+        if ((nbpoints - player.num1.points) >= 10 && player.num1.boulettes == 0) {
+            player.num1.boulettes = player.num1.boulettes + 2;
+        } else if ((nbpoints - player.num1.points) >= 5  && player.num1.boulettes < 2) {
+            player.num1.boulettes = player.num1.boulettes + 1;
+        }
+        info.boulette.text("Nb boulettes : " + player.num1.boulettes);
+        
+        // On met Ã  jour l'affichage
+        
+        // On arrete le compteur de temps 
+        
+        // On passe au tour suivant 
+        game.tour = game.tour + 1;
+        initour (game.tour,"start");
+        
+        // On remet en route le timer
+        
+    }
+    
+    
     
 }
 

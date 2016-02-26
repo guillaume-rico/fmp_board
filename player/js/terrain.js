@@ -38,7 +38,7 @@ function Terrain(nbCol,nbRow) {
 }
       
 Terrain.prototype.get = function(x, y) {
-    if (x < 0 || x > this.max || y < 0 || y > this.max) return -1;
+    if (x < 0 || x >= this.nbCol || y < 0 || y >= this.nbRow) return -1;
     return this.map[y + this.size * x];
 };
 
