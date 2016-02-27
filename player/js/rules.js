@@ -217,9 +217,27 @@ Marre.prototype.getName = function(numTour) {
     }
     return text;
 }
-var marre = new Marre();
 
-var astrone = {};
+function getNbPoint (numtour) {
+    var nbpoints = 15;
+
+    switch (numtour) {
+        case 1 :
+            nbpoints = 0;
+            break;
+        case 2 :
+            nbpoints = 0;
+            break;
+        case 3 :
+            nbpoints = 5;
+            break;
+        case 4 :
+            nbpoints = 10;
+            break;
+    }
+    return nbpoints;
+}
+
 function initour (numtour,startOrEnd) {
 
     var nbpoints = 15;
@@ -228,41 +246,89 @@ function initour (numtour,startOrEnd) {
         case 1 :
             // Placement des astronefs
             if (startOrEnd == "start") {
-                astrone = [{
-                        i: 0,
-                        j: 0,
-                        x: 0.7 * width,
-                        y: 0.5 * height,
-                        type: "astronef",
-                        orientation:180
-                    }];
-                
-                var rectangle = container.append("g")
-                        .attr("class", "astronef")
-                            .selectAll("circle")
-                            .data(astrone).enter().append("svg:image")
-                                .attr("x", function (d) { return d.x ; })
-                                .attr("y", function (d) { return d.y ; })
-                                .attr("width", pion.astronef.width)
-                                .attr("height", pion.astronef.height)
-                                .attr("xlink:href",function (d) { return "img/astronef_" + d.orientation + ".png"; })
-                                .call(drag);
+                if (players[game.player].type == "player") {
+                    var astrone = [{
+                            i: 0,
+                            j: 0,
+                            x: (MapColumns + 1) * hexRadius * 1.5,
+                            y: 1 * hexRadius * 1.75,
+                            type: "astronef",
+                            orientation:180
+                        }];
+                    units.push(astrone[0]);
+
+                    var rectangle = container.append("g")
+                            .attr("class", "unit")
+                                .selectAll("circle")
+                                .data(astrone).enter().append("svg:image")
+                                    .attr("class", "unit astronef player" + game.player)
+                                    .attr("x", function (d) { return d.x ; })
+                                    .attr("y", function (d) { return d.y ; })
+                                    .attr("width", pion.astronef.width)
+                                    .attr("height", pion.astronef.height)
+                                    .attr("draggable","valid")
+                                    .attr("dragtype","init")
+                                    .attr("xlink:href","img/astronef_180.png")
+                                    .call(drag);
+                }
             } else {
-                //l'IA place ses pions 
-                position = IA1.placeastronef();
-                
-                
                 // On rend non draggable les astronefs
-                astrone[0].drag = "invalid";
+                d3.selectAll(".astronef").attr("draggable","invalid");
                 
                 // On enleve les minerais
+                var positiona = {i:-1 , j:-1};
+                d3.selectAll(".astronef").each(function (d) {
+                        positiona.i = d3.select(this).attr("i");
+                        positiona.j = d3.select(this).attr("j");
+                        console.log(positiona);
+                        terrain.removeMinerai(positiona,3);
+                    }
+                )
             }
+
+
+
 
             nbpoints = 0;
             
             break;
         case 2 :
             // Placement des pions
+            if (startOrEnd == "start") {
+                var piontoplace = [
+                    {x: (MapColumns + 1) * hexRadius * 1.5, y: 1 * hexRadius * 1.75, type: "char"},
+                    {x: (MapColumns + 2) * hexRadius * 1.5, y: 1 * hexRadius * 1.75, type: "char"},
+                    {x: (MapColumns + 3) * hexRadius * 1.5, y: 1 * hexRadius * 1.75, type: "char"},
+                    {x: (MapColumns + 4) * hexRadius * 1.5, y: 1 * hexRadius * 1.75, type: "char"},
+                    {x: (MapColumns + 1) * hexRadius * 1.5, y: 2 * hexRadius * 1.75, type: "gros_tas"},
+                    {x: (MapColumns + 2) * hexRadius * 1.5, y: 2 * hexRadius * 1.75, type: "crabe"},
+                    {x: (MapColumns + 3) * hexRadius * 1.5, y: 2 * hexRadius * 1.75, type: "pondeuse"},
+                    {x: (MapColumns + 1) * hexRadius * 1.5, y: 3 * hexRadius * 1.75, type: "vedette"},
+                    {x: (MapColumns + 2) * hexRadius * 1.5, y: 3 * hexRadius * 1.75, type: "vedette"},
+                    {x: (MapColumns + 3) * hexRadius * 1.5, y: 3 * hexRadius * 1.75, type: "barge"}
+                ];
+
+                var rectangle = container.append("g")
+                        .attr("class", "unit")
+                            .selectAll("circle")
+                            .data(piontoplace).enter().append("svg:image")
+                                .attr("class", function (d) { return "unit " + d.type ; })
+                                .attr("x", function (d) { return d.x ; })
+                                .attr("y", function (d) { return d.y ; })
+                                .attr('width', function (d) { return pion[d.type].width;})
+                                .attr('height', function (d) { return pion[d.type].height;})
+                                .attr("draggable","valid")
+                                .attr("dragtype","init")
+                                .attr("xlink:href",function (d) { return "img/" + d.type + "_0.png"; })
+                                .attr("figurine", function (d) { return d.type; })
+                                .call(drag);
+                                
+            } else {
+                //l'IA place ses pions 
+                //position = IA1.placeastronef();
+                d3.selectAll(".astronef").attr("dragtype","normal");
+                
+            }
             nbpoints = 0;
             break;
         case 3 :
@@ -301,48 +367,80 @@ function initour (numtour,startOrEnd) {
             // Fin de la partie
             break;
     }
-    
+}
 
-    // Si c'est le début du tour
-    if (startOrEnd == "start") {
+// Cette fonction régit les tours 
+function contolleurdetour(playerNum, state) {
+    console.log(playerNum + " " + state);
+    // Si c'est le premier joueur qui commmence, on réalise les actions de début de tour 
+    if (playerNum == 1 && state == "start") {
+        
+        // On réalise les actions de début de tour
         // Mise à jour du texte des tours
-        info.tour.text("Tour : " + numtour + "/25");
+        info.tour.text("Tour : " + game.tour + "/25");
         
         // On remet le compteur des points
-        player.num1.points = 0;
-        info.point.text("Points restants : " + player.num1.points + "/" + nbpoints);
+        players[playerNum].points = 0;
+        info.point.text("Points restants : " + players[playerNum].points + "/" + getNbPoint(game.tour));
         
         // on met à jour le texte de la marée actuelle
-        info.maree.text("Marée : " + marre.getName(numtour - 1));
+        info.maree.text("Marée : " + marre.getName(game.tour  - 1));
         
         // on met à jour le texte de la marée actuelle
-        info.maree_next.text("future : " + marre.getName(numtour));
-
+        info.maree_next.text("future : " + marre.getName(game.tour ));
         
-    } else {
-        
-        // S'il reste des points, on les crédites
-        // Mise à jour des boulettes
-        if ((nbpoints - player.num1.points) >= 10 && player.num1.boulettes == 0) {
-            player.num1.boulettes = player.num1.boulettes + 2;
-        } else if ((nbpoints - player.num1.points) >= 5  && player.num1.boulettes < 2) {
-            player.num1.boulettes = player.num1.boulettes + 1;
-        }
-        info.boulette.text("Nb boulettes : " + player.num1.boulettes);
-        
-        // On met à jour l'affichage
-        
-        // On arrete le compteur de temps 
-        
-        // On passe au tour suivant 
-        game.tour = game.tour + 1;
         initour (game.tour,"start");
+    }
+    
+    // Si c'est le début d'un joueur 
+    if (state == "start") {
+        // On réinitialise le timer 
         
-        // On remet en route le timer
+        // Si c'est l'IA , on la fait jouer 
+        if (players[playerNum].type == "bot") {
+            
+            switch (game.tour) {
+                case 1 :
+                    //l'IA place ses pions 
+                    position = players[playerNum].pointer.placeastronef();
+                    break;
+                
+            }
+            
+            // On fait jouer le perso suivant dans Xms
+            setTimeout(function(){ contolleurdetour(game.player,"end");}, 1000)
+            
+        }
+            
+                        
         
     }
     
+    // Si c'est la fin d'un joueur 
+    if (state == "end") {
+        
+        // S'il reste des points, on les crédites
+        // Mise à jour des boulettes
+        if ((getNbPoint(game.tour) - players[playerNum].points) >= 10 && players[playerNum].boulettes == 0) {
+            players[playerNum].boulettes = players[playerNum].boulettes + 2;
+        } else if ((getNbPoint(game.tour) - players[playerNum].points) >= 5  && players[playerNum].boulettes < 2) {
+            players[playerNum].boulettes = players[playerNum].boulettes + 1;
+        }
+        info.boulette.text("Nb boulettes : " + players[playerNum].boulettes);
+        
+        // On lance le tour du deuxième joueur (sauf si c'est le dernier)
+        if (playerNum != players.length - 1 ) {
+            game.player = playerNum + 1;
+            contolleurdetour(game.player, "start");
+        }
+        
+    }
     
-    
-}
+    // Si c'est le dernier jouer qui termine, on réalise les actions de fin de tour 
+    if (playerNum == players.length - 1 && state == "end") {
+        game.player = 1;
+        game.tour = game.tour + 1;
+        contolleurdetour(game.player, "start");
+    }
 
+}

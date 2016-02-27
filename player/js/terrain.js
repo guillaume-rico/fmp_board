@@ -571,4 +571,24 @@ Terrain.prototype.set = function(x, y, val) {
         return position;
     }
 
+    Terrain.prototype.removeMinerai = function(position,radius) {
+        
+        positionCube = offsetToCube(position.i , position.j);
+        
+        for (var i = 0; i < this.nbCol ; i++) {
+            for (var j = 0; j < this.nbRow ; j++) {
+                if (this.minerai[i][j] == 1) {
+                    // On calcul la distance 
+                    distance = cube_distance(offsetToCube(i, j),positionCube);
+                    
+                    if (distance <= radius) {
+                        // On supprime le minerai
+                        this.minerai[i][j] = 0;
+                        d3.select(".minerai_" + i + "-" + j).remove()
+                    }
+                }
+            }
+        }
+        
+    }
       

@@ -11,6 +11,7 @@
         <script type="text/javascript" src="js/initialisation.js"></script>
         <script type="text/javascript" src="js/timer.js"></script>
         <script type="text/javascript" src="js/IA.js"></script>
+        <script type="text/javascript" src="js/unit.js"></script>
         <style>
 
         .dot circle {
@@ -47,27 +48,43 @@
     // Variables du jeu
     var game = {
         tour: 1,
-        marree: 0
+        marree: 0,
+        player: 1
     };
     
-    var player = {
-        "num1" : {
+    // On crée les IA
+    var IA2 = new IA(2);
+    var IA3 = new IA(3);
+    var IA4 = new IA(4);
+    var players = [
+        {},
+        {
+            "type" : "player",
             "boulettes" : 0,
             "points" : 0
         },
-        "num2" : {
+        {
+            "type" : "bot",
+            "pointer" : IA2,
             "boulettes" : 0,
             "points" : 0
         },
-        "num3" : {
+        {
+            "type" : "bot",
+            "pointer" : IA3,
             "boulettes" : 0,
             "points" : 0
         },
-        "num4" : {
+        {
+            "type" : "bot",
+            "pointer" : IA4,
             "boulettes" : 0,
             "points" : 0
         }
-    };
+    ];
+    
+    // Cette liste contient toutes les unites
+    unit = [];
     
     var margin = {top: 40, right:40, bottom:40, left: 40},
         width =  0.97 * $(window).width() ,
@@ -144,7 +161,7 @@
                             .attr("width", 32)
                             .attr("height", 32)
                             .attr("xlink:href","img/rotate-option.png")
-                            .on("click",function(){initour(game.tour,"end");});
+                            .on("click",function(){contolleurdetour(game.player,"end");});
                             
     // On ajoute les hexagones
     //The maximum radius the hexagons can have to still fit the screen
@@ -316,7 +333,7 @@
     var lastdragstate = "invalid";
     function dragged(d) {
     
-        if (d.drag == "invalid") return;
+        if (d3.select(this).attr("draggable") != "valid") return;
     
         d3.select(this).attr("x", d.x = d3.event.x).attr("y", d.y = d3.event.y);
         // Verification qu'on a le droit de se poser sur cette case
@@ -337,9 +354,10 @@
             d3.selectAll(".hexagon").classed("hexred", false);
 
             // Si c'est une pose pur sans calcul de trajectoire
-            if (position.type == "astronef") {
+            if (d3.select(this).attr("dragtype") == "init") {
+            
                 // Si possible, on tourne l'astronef
-                if (lastdragstate == "invalid") {
+                if (position.type == "astronef" && lastdragstate == "invalid") {
                     position.orientation = (position.orientation + 180) % 360;
                     lastdragstate2 = rules_check_position(position,game);
                     if (lastdragstate2 == "invalid") {
@@ -350,6 +368,20 @@
                         // On met à jour la donnée le concernant
                         d3.select(this).data()[0].orientation = position.orientation;
 
+                    }
+                }
+                
+                // On se place au maximum à 4 hexagone de l'astronef 
+                if (position.type != "astronef") {
+                
+                    // On cherche l'astronef du joueur
+                    astroi = d3.selectAll(".astronef").filter(".player" + game.player).attr("i")
+                    astroj = d3.selectAll(".astronef").filter(".player" + game.player).attr("j")
+                
+                    distance = cube_distance(offsetToCube(position.i, position.j),offsetToCube(astroi, astroj));
+                    
+                    if (distance > 4) {
+                        lastdragstate = "invalid";
                     }
                 }
 
@@ -390,8 +422,7 @@
     }
 
     function dragended(d) {
-    
-        if (d.drag == "invalid") return;
+        if (d3.select(this).attr("draggable") != "valid") return;
     
         // On place le pion au bon endroit
         d3.selectAll(".hexagon").classed("hexgreen", false);
@@ -403,9 +434,15 @@
         }
         d3.select(this).attr("x", d.x = xyposition.x).attr("y", d.y =  xyposition.y);
         d3.select(this).classed("dragging", false);
+        
+        // On sauvegarde la position 
+        d3.select(this).attr("i", lastDraggPosition.i).attr("j", lastDraggPosition.j);
+
+        // On retire le nombre de points utilisés
+        
         startDraggPosition = {i: -1,j: -1};
     }
-
+/*
     d3.json("src/pion.json", function(error, dots) {
         if (error) return console.warn(error);
         
@@ -428,7 +465,8 @@
                             .attr("figurine", function (d) { return d.type; })
                             .call(drag);
     });
-    
+*/
+
     // On ajoute les cailloux
     for (index = 0; index < positionminerai.length; ++index) {
         positionminerai[index].x = svgIJtoXYimage(hexRadius,pion,positionminerai[index]).x;
@@ -439,8 +477,9 @@
                 .selectAll("circle")
                 .data(positionminerai)
                     .enter().append("svg:image")
-                        .attr("x", function (d) { return svgIJtoXYimage(hexRadius,pion,d).x ; })
+                        .attr("x", function (d) { return svgIJtoXYimage(hexRadius,pion,d).x ;})
                         .attr("y", function (d) { return svgIJtoXYimage(hexRadius,pion,d).y; })
+                        .attr("class", function (d) { return "minerai_" + d.i + "-" + d.j ;})
                         .attr('width', pion.minerai.width)
                         .attr('height', pion.minerai.height)
                         .attr("xlink:href","img/caillou.png")
@@ -479,15 +518,12 @@
                     .call(drag);
 */  
 
-    // On crée les IA
-    var IA1 = new IA();
-    var IA2 = new IA();
-    var IA3 = new IA();
+    // On calcul la marrée
+    var marre = new Marre();
 
-    initour(game.tour,"start");
-    
-    
-    
+    // On active le controler de tour
+    contolleurdetour(game.player,"start");
+
     </script>
     </body>
 </html>
