@@ -1,8 +1,7 @@
 
 // Calcul la distance entre deux positions
 // unit doit contenir type
-// game doit contenir marree
-function astar (start,goal,unit,game) {
+function astar (start,goal,unit) {
     
     var frontier = [];
     frontier.push(start);
@@ -23,11 +22,11 @@ function astar (start,goal,unit,game) {
        }
        
        var neig = hex_neighbor(current);
-       for (index = 0; index < neig.length; ++index) {
+       for (var index = 0; index < neig.length; ++index) {
             // S'il n'a pas été déjà visité et que le terrain est valide
             neig[index].type = unit.type;
            if (visited.indexOf(neig[index].i + "-" + neig[index].j) == -1
-                && rules_check_position(neig[index],game) == "valid") {
+                && rules_check_position(neig[index]) == "valid") {
              frontier.push(neig[index]);
              visited.push(neig[index].i + "-" + neig[index].j);
              came_from[neig[index].i + "-" + neig[index].j] = current;
@@ -38,7 +37,7 @@ function astar (start,goal,unit,game) {
     current = goal;
     var path = [current];
     //path.push(current);
-    
+
     // S'il n'y a pas de sortie
     if (came_from[goal.i + "-" + goal.j] == "none") {
         return path.reverse(); 
@@ -49,64 +48,58 @@ function astar (start,goal,unit,game) {
        path.push(current);
     }
     
-    return path.reverse(); 
+    // Si ça fait trop de mouvement
+    if (getNbPoint(game.tour) != 0 && (getNbPoint(game.tour) - players[game.player].points - path.length + 1 < 0)) {
+        path = [];
+    }
     
+    return path.reverse(); 
 }
 
 // Position doit contenir :
 // - i j et type
 // - Si type est astronef, elle doit aussi contenir orientation
-// game doit contenir marree
-function rules_check_position(position,game) {
-    // On récupere la nature du sol
-    sol = intoshortint(terrain.get(position.i, position.j));
+function rules_check_position(position) {
     // 3 Marécage - 4 sol - 5 montagne
-    var returnval = "invalid";
 
-    // Si c'est un astronef
-    if (position.type == "astronef") {
-        // On vérifie que les 4 cases sont OK
-        hex = getHexOfFigurine(position);
-        returnval = "valid";
-        for (index = 0; index < hex.length; ++index) {
-            naturesol = intoshortint(terrain.get(hex[index].i, hex[index].j));
-            if (naturesol < 3 || naturesol == 5) {
-                returnval = "invalid";
+    // On vérifie que les 4 cases sont OK
+    hex = getHexOfFigurine(position);
+    returnval = "valid";
+    for (index = 0; index < hex.length; ++index) {
+        naturesol = intoshortint(terrain.get(hex[index].i, hex[index].j));
+        unitinside = d3.selectAll("image[i='" + hex[index].i + "']").filter("image[j='" + hex[index].j + "']");
+        switch (position.type) {
+            case "pondeuse" :
+            case "crabe" :
+            case "minerai" :
+            case "char":
+                // Si c'est supérieur à 3 c'est que c'est praticable
+                if (naturesol + game.marree < 3 || terrain.minerai[position.i][position.j] == 1 || unitinside != "") {
+                    returnval = "invalid";
+                }
                 break;
-            }
+            case "astronef" :
+                // Si c'est supérieur à 3 mais pas une montagne
+                if ((naturesol + game.marree) < 3 || naturesol == 5 || unitinside != "") {
+                    returnval = "invalid";
+                }
+                break;
+            case "gros_tas":
+                // Si c'est supérieur à 3 mais pas une montagne
+                if (naturesol + game.marree < 3 || naturesol == 5 || terrain.minerai[position.i][position.j] == 1 || unitinside != "") {
+                    returnval = "invalid";
+                }
+                break;
+            case "barge":
+            case "vedette":
+            case "ponton":
+                // Si c'est inférieur à 3 c'est que c'est que c'est de l'eau
+                if (naturesol + game.marree >= 3 || terrain.minerai[position.i][position.j] == 1 || unitinside != "") {
+                    returnval = "invalid";
+                }
+                break;            
         }
-    } else {
-        // S'il y a un minerai
-        if (terrain.minerai[position.i][position.j] != 1) {
-            // Si c'est un char 
-            switch (position.type) {
-                case "pondeuse" :
-                case "crabe" :
-                case "minerai" :
-                case "char":
-                    // Si c'est supérieur à 3 c'est que c'est praticable
-                    if (sol + game.marree >= 3) {
-                        returnval = "valid";
-                    }
-                    break;
-                case "astronef" :
-                case "gros_tas":
-                    // Si c'est supérieur à 3 mais pas une montagne
-                    if (sol + game.marree >= 3 && sol != 5) {
-                        returnval = "valid";
-                    }
-                    break;
-                case "barge":
-                case "vedette":
-                case "ponton":
-                    // Si c'est inférieur à 3 c'est que c'est que c'est de l'eau
-                    if (sol + game.marree < 3) {
-                        returnval = "valid";
-                    }
-                    break;            
-            }
-        }
-    } 
+    }
 
     return returnval;
 }
@@ -220,7 +213,7 @@ Marre.prototype.getName = function(numTour) {
 
 function getNbPoint (numtour) {
     var nbpoints = 15;
-
+    
     switch (numtour) {
         case 1 :
             nbpoints = 0;
@@ -272,6 +265,8 @@ function initour (numtour,startOrEnd) {
                                     .call(drag);
                 }
             } else {
+                
+                
                 // On rend non draggable les astronefs
                 d3.selectAll(".astronef").attr("draggable","invalid");
                 
@@ -280,7 +275,6 @@ function initour (numtour,startOrEnd) {
                 d3.selectAll(".astronef").each(function (d) {
                         positiona.i = d3.select(this).attr("i");
                         positiona.j = d3.select(this).attr("j");
-                        console.log(positiona);
                         terrain.removeMinerai(positiona,3);
                     }
                 )
@@ -305,14 +299,14 @@ function initour (numtour,startOrEnd) {
                     {x: (MapColumns + 3) * hexRadius * 1.5, y: 2 * hexRadius * 1.75, type: "pondeuse"},
                     {x: (MapColumns + 1) * hexRadius * 1.5, y: 3 * hexRadius * 1.75, type: "vedette"},
                     {x: (MapColumns + 2) * hexRadius * 1.5, y: 3 * hexRadius * 1.75, type: "vedette"},
-                    {x: (MapColumns + 3) * hexRadius * 1.5, y: 3 * hexRadius * 1.75, type: "barge"}
+                    {x: (MapColumns + 3) * hexRadius * 1.5, y: 3 * hexRadius * 1.75, type: "barge", orientation: 0}
                 ];
 
                 var rectangle = container.append("g")
                         .attr("class", "unit")
                             .selectAll("circle")
                             .data(piontoplace).enter().append("svg:image")
-                                .attr("class", function (d) { return "unit " + d.type ; })
+                                .attr("class", function (d) { return "unit " + d.type + " player" + game.player ; })
                                 .attr("x", function (d) { return d.x ; })
                                 .attr("y", function (d) { return d.y ; })
                                 .attr('width', function (d) { return pion[d.type].width;})
@@ -325,8 +319,9 @@ function initour (numtour,startOrEnd) {
                                 
             } else {
                 //l'IA place ses pions 
-                //position = IA1.placeastronef();
-                d3.selectAll(".astronef").attr("dragtype","normal");
+                
+                // On rend 
+                d3.selectAll(".unit").attr("dragtype","normal");
                 
             }
             nbpoints = 0;
@@ -378,12 +373,9 @@ function contolleurdetour(playerNum, state) {
         // On réalise les actions de début de tour
         // Mise à jour du texte des tours
         info.tour.text("Tour : " + game.tour + "/25");
-        
-        // On remet le compteur des points
-        players[playerNum].points = 0;
-        info.point.text("Points restants : " + players[playerNum].points + "/" + getNbPoint(game.tour));
-        
+
         // on met à jour le texte de la marée actuelle
+        game.marre == marre.get(game.tour );
         info.maree.text("Marée : " + marre.getName(game.tour  - 1));
         
         // on met à jour le texte de la marée actuelle
@@ -394,7 +386,12 @@ function contolleurdetour(playerNum, state) {
     
     // Si c'est le début d'un joueur 
     if (state == "start") {
-        // On réinitialise le timer 
+        // On remet le compteur des points
+        players[playerNum].points = 0;
+        UIupdatePoints(0);
+        
+        // On réinitialise le timer
+        startTimer();
         
         // Si c'est l'IA , on la fait jouer 
         if (players[playerNum].type == "bot") {
@@ -408,7 +405,7 @@ function contolleurdetour(playerNum, state) {
             }
             
             // On fait jouer le perso suivant dans Xms
-            setTimeout(function(){ contolleurdetour(game.player,"end");}, 1000)
+            setTimeout(function(){ contolleurdetour(game.player,"end");}, 100)
             
         }
             
@@ -418,6 +415,9 @@ function contolleurdetour(playerNum, state) {
     
     // Si c'est la fin d'un joueur 
     if (state == "end") {
+        
+        // On arrete le timer 
+        stopTimer();
         
         // S'il reste des points, on les crédites
         // Mise à jour des boulettes
@@ -438,6 +438,9 @@ function contolleurdetour(playerNum, state) {
     
     // Si c'est le dernier jouer qui termine, on réalise les actions de fin de tour 
     if (playerNum == players.length - 1 && state == "end") {
+        
+        initour (game.tour,"end");
+        
         game.player = 1;
         game.tour = game.tour + 1;
         contolleurdetour(game.player, "start");

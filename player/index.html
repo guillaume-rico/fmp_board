@@ -12,6 +12,7 @@
         <script type="text/javascript" src="js/timer.js"></script>
         <script type="text/javascript" src="js/IA.js"></script>
         <script type="text/javascript" src="js/unit.js"></script>
+        <script type="text/javascript" src="js/UI.js"></script>
         <style>
 
         .dot circle {
@@ -45,6 +46,11 @@
     <body>
     <script>
 
+    // TODO :
+    // - Si le joueur ne place pas son astronef, le placer automatiquement
+    // - L'IA doit trouver le plus gros bloc d'eau
+    // - L'IA doit être fuzzy sur la sélection de la position de l'emplacement
+    
     // Variables du jeu
     var game = {
         tour: 1,
@@ -162,7 +168,7 @@
                             .attr("height", 32)
                             .attr("xlink:href","img/rotate-option.png")
                             .on("click",function(){contolleurdetour(game.player,"end");});
-                            
+
     // On ajoute les hexagones
     //The maximum radius the hexagons can have to still fit the screen
     // width/((MapColumns + 0.5) * Math.sqrt(3))
@@ -216,10 +222,10 @@
             yoffset: 1.3 * hexRadius / 2,
         },
         barge: {
-            width: 1.3 * hexRadius,
-            height: 1.3 * hexRadius,
-            xoffset: 1.3 * hexRadius / 2,
-            yoffset: 1.3 * hexRadius / 2,
+            width: 3.6 * hexRadius,
+            height: 3.6 * hexRadius,
+            xoffset: 3.6 * hexRadius / 2,
+            yoffset: 3.6 * hexRadius / 2,
         },
         pondeuse: {
             width: 1.3 * hexRadius,
@@ -331,6 +337,7 @@
     var startDraggPosition = {i: -1,j: -1,type:"char"};
     var lastDraggPosition = {i: -1,j: -1,type:"char"};
     var lastdragstate = "invalid";
+    var pointtoremove = 0;
     function dragged(d) {
     
         if (d3.select(this).attr("draggable") != "valid") return;
@@ -348,7 +355,7 @@
             startDraggPosition = position;
         } else if (lastDraggPosition.i != position.i || lastDraggPosition.j != position.j ) {
             // Verificiation de la position
-            lastdragstate = rules_check_position(position,game);
+            lastdragstate = rules_check_position(position);
             // Si c'est valide on met cet hexagone en vert 
             d3.selectAll(".hexagon").classed("hexgreen", false);
             d3.selectAll(".hexagon").classed("hexred", false);
@@ -359,7 +366,7 @@
                 // Si possible, on tourne l'astronef
                 if (position.type == "astronef" && lastdragstate == "invalid") {
                     position.orientation = (position.orientation + 180) % 360;
-                    lastdragstate2 = rules_check_position(position,game);
+                    lastdragstate2 = rules_check_position(position);
                     if (lastdragstate2 == "invalid") {
                         position.orientation = (position.orientation + 180) % 360;
                     } else {
@@ -396,7 +403,7 @@
                 }                
             } else {
                 // On calcul le chemin
-                listOfHex = astar(startDraggPosition,position,d,game);
+                listOfHex = astar(startDraggPosition,position,d);
                 if (listOfHex.length <= 1) {
                     lastdragstate = "invalid";
                 }
@@ -408,14 +415,21 @@
                 
                 if (lastdragstate == "valid") {
                     d3.select(".hexagonindex" + position.i + "-" + position.j + "").classed("hexgreen",true);
+                    // On indique le cout en nombre d'action 
+                    pointtoremove = listOfHex.length - 1;
+                    UIupdatePoints(pointtoremove);
                 } else {
                     d3.select(".hexagonindex" + position.i + "-" + position.j + "").classed("hexred",true);
+                    UIupdatePoints(0);
                 }
                 
                 // On change l'axe de l'image si il y a eu un déplacement et que ce n'est pas un astronef
                 if (listOfHex.length >= 2 && position.type != "astronef") {
                     d3.select(this).attr("xlink:href",function (d) { return "img/" + d.type + "_" + angularIJ(listOfHex[listOfHex.length - 2],listOfHex[listOfHex.length - 1]) + ".png"; });
                 }
+                
+
+                
             }
             lastDraggPosition = position;
         }
@@ -439,6 +453,13 @@
         d3.select(this).attr("i", lastDraggPosition.i).attr("j", lastDraggPosition.j);
 
         // On retire le nombre de points utilisés
+        players[game.player].points += pointtoremove;
+        UIupdatePoints(0);
+        
+        // Si on arrive au total, c'est au joueur suivant 
+        if (getNbPoint(game.tour) != 0 && players[game.player].points >= getNbPoint(game.tour)) {
+            contolleurdetour(game.player,"end");
+        }
         
         startDraggPosition = {i: -1,j: -1};
     }
@@ -483,40 +504,6 @@
                         .attr('width', pion.minerai.width)
                         .attr('height', pion.minerai.height)
                         .attr("xlink:href","img/caillou.png")
-/*
-    var astronef = [{
-        i: 3,
-        j: 8,
-        x: 0,
-        y: 0,
-        type: "astronef",
-        orientation:180,
-        drag: "invalid"
-    },{
-        i: 1,
-        j: 8,
-        x: 0,
-        y: 0,
-        type: "astronef",
-        orientation:0,
-        drag: "invalid"
-    }];
-    for (index = 0; index < astronef.length; ++index) {
-        astronef[index].x = svgIJtoXYimage(hexRadius,pion,astronef[index]).x;
-        astronef[index].y = svgIJtoXYimage(hexRadius,pion,astronef[index]).y;
-    }
-    //svg.append("svg:image").data(astronef)
-    var rectangle = container.append("g")
-            .attr("class", "astronef")
-                .selectAll("circle")
-                .data(astronef).enter().append("svg:image")
-                    .attr("x", function (d) { return svgIJtoXYimage(hexRadius,pion,d).x ; })
-                    .attr("y", function (d) { return svgIJtoXYimage(hexRadius,pion,d).y ; })
-                    .attr("width", pion.astronef.width)
-                    .attr("height", pion.astronef.height)
-                    .attr("xlink:href",function (d) { return "img/astronef_" + d.orientation + ".png"; })
-                    .call(drag);
-*/  
 
     // On calcul la marrée
     var marre = new Marre();

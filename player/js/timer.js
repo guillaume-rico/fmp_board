@@ -1,5 +1,9 @@
 
-function startTimer(duration) {
+var timerRun = 0;
+var refreshIntervalTimer = 0;
+function startTimer() {
+    var duration = 60 * 3;
+    timerRun = 1;
     var start = Date.now(),
         diff,
         minutes,
@@ -22,16 +26,20 @@ function startTimer(duration) {
         if (diff <= 0) {
             // add one second so that the count down starts at the full duration
             // example 05:00 not 04:59
-            start = Date.now() + 1000;
+            //start = Date.now() + 1000;
+            // On termine le tour du joueur
+            stopTimer();
+            contolleurdetour(game.player,"end");
         }
     };
     // we don't want to wait a full second before the timer starts
     timer();
-    setInterval(timer, 90);
+    refreshIntervalId = setInterval(timer, 90);
 }
 
-window.onload = function () {
-    var fiveMinutes = 60 * 3,
-        display = document.querySelector('#time');
-    startTimer(fiveMinutes);
-};
+function stopTimer() {
+    if (timerRun == 1) {
+        clearInterval(refreshIntervalId);
+        timerRun = 0;
+    }
+}

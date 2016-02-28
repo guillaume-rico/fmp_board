@@ -12,7 +12,7 @@ function IA(num) {
             i2 : -2,
             a2 : -1,
             m2 : 10,
-            proximity : -10
+            proximity : -5
         }
     };
     
@@ -21,10 +21,8 @@ function IA(num) {
 }
 
 IA.prototype.placeastronef = function() {
-    var position = {};
-    var game = {};
+    var position = {type : "astronef"};
     var scorepos = {};
-    position.type = "astronef";
     var selectedPosition = {i:0, j:0};
     
     for (var i = 0; i < MapColumns; i++) {
@@ -33,6 +31,8 @@ IA.prototype.placeastronef = function() {
             position.j = j;
             
             var max = -100;
+            var status = "invalid";
+            var statuschoisit = "invalid";
             
             // On calcul la distance par rapports aux autres astronef 
             var distancemin = 100;
@@ -52,7 +52,7 @@ IA.prototype.placeastronef = function() {
 
                     // On regarde si la position est valide
                     position.orientation = orien;
-                    status = rules_check_position(position,game);
+                    status = rules_check_position(position);
 
                     // Si la position est valide, on calcul son score
                     if (status == "valid") {
@@ -117,6 +117,7 @@ IA.prototype.placeastronef = function() {
                         if (score > max) {
                             max = score;
                             orientationchoisie = orien;
+                            statuschoisit = status;
                         }
                     }
                 }
@@ -125,21 +126,22 @@ IA.prototype.placeastronef = function() {
                 if (distancemin < 16) {
                     max = max + (17 - distancemin) * this.coef.astronef.proximity;
                 }
-                
-                
             }
-            
-            
 
+            if (statuschoisit == "invalid") {
+                max = -100;
+            } 
             
-            // En Debug on affiche le texte sur l'image 
-            /*if (max >= 120) {
+            // En Debug on affiche le texte sur l'image
+            /*
+            if (game.player == 2 && statuschoisit == "valid") {
                 tstpost = svgIJtoXY(hexRadius,position);
                 debug = container.append("text")
                             .attr("x", tstpost.x - 4)
                             .attr("y", tstpost.y)
                             .text(max);
-            }*/
+            }
+            */
             
             // On sauvegarde la valeur 
             scorepos[i + "-" + j + "-" + orientationchoisie] = max;           
@@ -166,7 +168,7 @@ IA.prototype.placeastronef = function() {
     }];
     astrone[0].x = svgIJtoXYimage(hexRadius,pion,astrone[0]).x;
     astrone[0].y = svgIJtoXYimage(hexRadius,pion,astrone[0]).y;
-    
+
     var rectangle = container.append("g")
                 .attr("class", "unit")
                 .selectAll("circle")
@@ -181,7 +183,7 @@ IA.prototype.placeastronef = function() {
                     .attr("height", pion.astronef.height)
                     .attr("xlink:href",function (d) { return "img/astronef_" + d.orientation + ".png"; })
                     .call(drag);
-    
+
     units.push(astrone[0]);
     
     return scorepos[keysSorted[0]];
