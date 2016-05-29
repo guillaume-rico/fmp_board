@@ -231,10 +231,7 @@ function getNbPoint (numtour) {
     return nbpoints;
 }
 
-function initour (numtour,startOrEnd) {
-
-    var nbpoints = 15;
-
+function initourPlayer  (numtour,startOrEnd) {
     switch (numtour) {
         case 1 :
             // Placement des astronefs
@@ -265,26 +262,9 @@ function initour (numtour,startOrEnd) {
                                     .call(drag);
                 }
             } else {
-                
-                
                 // On rend non draggable les astronefs
                 d3.selectAll(".astronef").attr("draggable","invalid");
-                
-                // On enleve les minerais
-                var positiona = {i:-1 , j:-1};
-                d3.selectAll(".astronef").each(function (d) {
-                        positiona.i = d3.select(this).attr("i");
-                        positiona.j = d3.select(this).attr("j");
-                        terrain.removeMinerai(positiona,3);
-                    }
-                )
             }
-
-
-
-
-            nbpoints = 0;
-            
             break;
         case 2 :
             // Placement des pions
@@ -326,34 +306,111 @@ function initour (numtour,startOrEnd) {
             }
             nbpoints = 0;
             break;
-        case 3 :
-            // 5 points
-            nbpoints = 5;
+    }
+}
+
+
+function initour (numtour,startOrEnd) {
+
+    var nbpoints = 15;
+
+    switch (numtour) {
+        case 1 :
+            // Placement des astronefs
+            if (startOrEnd == "end") {
+                var positiona = {i:-1 , j:-1};
+                d3.selectAll(".astronef").each(function (d) {
+                        positiona.i = parseInt(d3.select(this).attr("i"));
+                        positiona.j = parseInt(d3.select(this).attr("j"));
+                        positiona.o = parseInt(d3.select(this).attr("orientation"));
+
+                        // On ajoute trois tourelles 
+                        if (positiona.o == 0) {
+                            var tourelle = [{
+                                    i: positiona.i,
+                                    j: positiona.j + 1,
+                                    x: 0,
+                                    y: 0,
+                                    type: "tourelle",
+                                    orientation:0
+                            },{
+                                    i: positiona.i - 1,
+                                    j: positiona.j - 1 + positiona.i % 2,
+                                    x: 0,
+                                    y: 0,
+                                    type: "tourelle",
+                                    orientation:120
+                            },{
+                                    i: positiona.i + 1,
+                                    j: positiona.j - 1 + positiona.i % 2,
+                                    x: 0,
+                                    y: 0,
+                                    type: "tourelle",
+                                    orientation:240
+                            }];
+                        } else {
+                            var tourelle = [{
+                                    i: positiona.i,
+                                    j: positiona.j - 1,
+                                    x: 0,
+                                    y: 0,
+                                    type: "tourelle",
+                                    orientation:0
+                            },{
+                                    i: positiona.i - 1,
+                                    j: positiona.j + positiona.i % 2,
+                                    x: 0,
+                                    y: 0,
+                                    type: "tourelle",
+                                    orientation:120
+                            },{
+                                    i: positiona.i + 1,
+                                    j: positiona.j + positiona.i % 2,
+                                    x: 0,
+                                    y: 0,
+                                    type: "tourelle",
+                                    orientation:240
+                            }];
+                        }
+                        
+                        for (var index = 0 ; index < 3; index ++) {
+                            tourelle[index].x = svgIJtoXYimage(hexRadius,pion,tourelle[index]).x;
+                            tourelle[index].y = svgIJtoXYimage(hexRadius,pion,tourelle[index]).y;
+                            console.log(tourelle[index].i + "-" + tourelle[index].j)
+                        }
+                        
+                        var rectangle = container.append("g")
+                                    .attr("class", "unit")
+                                    .selectAll("circle")
+                                    .data(tourelle).enter()
+                                        .append("svg:image")
+                                        .attr("class", "unit tourelle player" + game.player)
+                                        .attr("x", function (d) { return d.x ; })
+                                        .attr("y", function (d) { return d.y ; })
+                                        .attr("i", function (d) { return d.i ; })
+                                        .attr("j", function (d) { return d.j ; })
+                                        .attr("orientation", function (d) { return d.orientation ; })
+                                        .attr("width", pion.tourelle.width)
+                                        .attr("height", pion.tourelle.height)
+                                            .attr("xlink:href",function (d) { return "img/tourelle_" + d.orientation + ".png"; })
+                                            .call(drag);
+                        
+                        // On enleve les minerais
+                        terrain.removeMinerai(positiona,3);
+                    }
+                )
+            }
+
             break;
-        case 4 :
-            // 10 points
-            nbpoints = 10;
-            break;
-        case 5 :
-        case 6 :
-        case 7 :
-        case 8 :
-        case 9 :
-        case 10 :
-        case 11 :
-        case 12 :
-        case 13 :
-        case 14 :
-        case 15 :
-        case 16 :
-        case 17 :
-        case 18 :
-        case 19 :
-        case 20 :
-        case 22 :
-        case 23 :
-        case 24 :
-            // 15 points
+        case 2 :
+            // Placement des pions
+            if (startOrEnd == "end") {
+                //l'IA place ses pions 
+                
+                // On rend 
+                d3.selectAll(".unit").attr("dragtype","normal");
+                
+            }
             break;
         case 21 :
             // Décollage possible
@@ -393,6 +450,9 @@ function contolleurdetour(playerNum, state) {
         // On réinitialise le timer
         startTimer();
         
+        // On initialise le tour du joueur 
+        initourPlayer (game.tour,"start");
+        
         // Si c'est l'IA , on la fait jouer 
         if (players[playerNum].type == "bot") {
             
@@ -418,6 +478,9 @@ function contolleurdetour(playerNum, state) {
         
         // On arrete le timer 
         stopTimer();
+        
+        // On termine le tour du joueur 
+        initourPlayer (game.tour,"end");
         
         // S'il reste des points, on les crédites
         // Mise à jour des boulettes

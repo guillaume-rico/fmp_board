@@ -153,16 +153,16 @@ IA.prototype.placeastronef = function() {
     keysSorted = Object.keys(scorepos).sort(function(a,b){return scorepos[a]-scorepos[b]}).reverse();
     
     // On calcul i et j
-    itemp = keysSorted[0].split("-")[0];
-    jtemp = keysSorted[0].split("-")[1];
-    otemp = keysSorted[0].split("-")[2];
+    itemp = parseInt(keysSorted[0].split("-")[0]);
+    jtemp = parseInt(keysSorted[0].split("-")[1]);
+    otemp = parseInt(keysSorted[0].split("-")[2]);
     //console.log(itemp + "-" + jtemp + "-" + otemp)
     // On place l'astronef
     var astrone = [{
             i: itemp,
             j: jtemp,
-            x: 0.7 * width,
-            y: 0.5 * height,
+            x: 0,
+            y: 0,
             type: "astronef",
             orientation:otemp
     }];
@@ -179,11 +179,14 @@ IA.prototype.placeastronef = function() {
                     .attr("y", function (d) { return d.y ; })
                     .attr("i", function (d) { return d.i ; })
                     .attr("j", function (d) { return d.j ; })
+                    .attr("orientation", function (d) { return d.orientation ; })
                     .attr("width", pion.astronef.width)
                     .attr("height", pion.astronef.height)
                     .attr("xlink:href",function (d) { return "img/astronef_" + d.orientation + ".png"; })
                     .call(drag);
 
+    
+                    
     units.push(astrone[0]);
     
     return scorepos[keysSorted[0]];
